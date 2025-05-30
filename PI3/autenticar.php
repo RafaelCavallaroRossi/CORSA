@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
  
         if ($usuario['tipo_usuario'] == 'administrador') {
-            header('Location: Administrador/admin_dashboard.php');
+            header('Location: admdash.html');
         } elseif ($usuario['tipo_usuario'] == 'coordenador') {
             header('Location: Coordenador/menucoordenador.php');
         } elseif ($usuario['tipo_usuario'] == 'professor') {

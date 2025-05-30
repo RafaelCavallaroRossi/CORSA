@@ -19,7 +19,6 @@ session_start();
     <div class="min-h-screen flex items-center justify-center gradient-bg p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
-                <img src="https://via.placeholder.com/150x50?text=PréVest+Comunitário" alt="Logo" class="mx-auto h-12">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Acesso ao Sistema</h1>
                 <p class="text-gray-600">Gerencie sua jornada acadêmica</p>
             </div>
@@ -35,22 +34,12 @@ session_start();
                     <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
                     <input type="email" id="email" name="email" required 
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        placeholder="user123@fatec.sp.gov.br">
+                        placeholder="user123@gmail.com">
                 </div>
                 <div>
                     <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
                     <input type="password" id="senha" name="senha" required 
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center">
-                        <input id="remember-me" name="remember-me" type="checkbox" 
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                        <label for="remember-me" class="ml-2 block text-sm text-gray-700">Lembrar-me</label>
-                    </div>
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500">Esqueceu sua senha?</a>
-                    </div>
                 </div>
                 <div>
                     <button type="submit" 
@@ -65,28 +54,12 @@ session_start();
                         <div class="w-full border-t border-gray-300"></div>
                     </div>
                     <div class="relative flex justify-center text-sm">
-                        <span class="px-2 bg-white text-gray-500">Ou acesse como</span>
-                    </div>
-                </div>
-                <div class="mt-6 grid grid-cols-2 gap-3">
-                    <div>
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <span class="sr-only">Aluno</span>
-                            <i class="fas fa-user-graduate text-green-600"></i>
-                            <span class="ml-2">Aluno</span>
-                        </a>
-                    </div>
-                    <div>
-                        <a href="#" class="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
-                            <span class="sr-only">Responsável</span>
-                            <i class="fas fa-user-tie text-blue-600"></i>
-                            <span class="ml-2">Responsável</span>
-                        </a>
+                        <span class="px-2 bg-white text-gray-500">Ou Cadastre-se agora!</span>
                     </div>
                 </div>
             </div>
             <div class="mt-6 text-center">
-                <a href="cadastro.html" class="text-blue-600 hover:underline">Cadastre-se</a>
+                <a href="Administrador/cadastro.php" class="text-blue-600 hover:underline">Cadastrar</a>
             </div>
         </div>
     </div>

@@ -1,32 +1,41 @@
 # CORSA
-Central de Organizações e Registros Sistêmicos Acadêmicos
-# Sistema de Cadastro e Marcação de Presença Escolar
+**Central de Organizações e Registros Sistêmicos Acadêmicos**
 
-Este projeto é um sistema web desenvolvido em PHP para cadastro de usuários (alunos, professores, coordenadores e administradores) e marcação de presença em uma escola. O sistema permite o gerenciamento de justificativas de faltas, planos de reposição de aulas, acompanhamento de solicitações e administração de usuários.
+## Sistema de Cadastro e Marcação de Presença Escolar
 
-## Funcionalidades
+O projeto **CORSA** tem como missão desenvolver uma solução eficiente, segura e acessível para instituições de ensino, com dois principais objetivos:
 
-- **Cadastro de Usuários:** Administradores podem cadastrar, editar e excluir usuários do sistema.
-- **Login Seguro:** Autenticação de usuários com diferentes níveis de acesso (administrador, professor, coordenador).
-- **Justificativa de Faltas:** Professores podem justificar faltas, anexar documentos e acompanhar o status das solicitações.
-- **Plano de Reposição:** Professores podem enviar planos de reposição de aulas para aprovação do coordenador.
-- **Acompanhamento:** Professores acompanham o status das solicitações e podem editar planos recusados.
-- **Validação e Aprovação:** Coordenadores visualizam, aprovam ou recusam solicitações, podendo adicionar comentários.
-- **Interface Responsiva:** Layout adaptado para diferentes dispositivos, com design moderno e intuitivo.
+- Garantir um **cadastro de usuários seguro**, abrangendo Administradores, Professores e Alunos;
+- Fornecer um sistema prático e intuitivo para o **registro de presença dos alunos**, realizado pelos professores.
 
+A proposta visa **otimizar e automatizar processos educacionais**, como matrícula, gerenciamento de aulas e controle de faltas, por meio de uma **plataforma leve e intuitiva**. 
 
-## Tecnologias Utilizadas
-
-- PHP (com PDO para acesso ao banco de dados)
-- MySQL
-- HTML5, CSS3
-- JavaScript (para interatividade e validações)
-- Bootstrap (opcional, para responsividade)
-
-## Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+Considerando que a escola oferece cursos gratuitos e cumpre um papel social relevante, buscamos entregar uma aplicação funcional e confiável, que possa ser utilizada mesmo em ambientes com infraestrutura tecnológica limitada. Nosso objetivo é contribuir com a rotina de **professores voluntários e coordenadores**, promovendo uma gestão mais eficaz e organizada.
 
 ---
 
-*Desenvolvido pelo grupo [Block-Brain]* 🚀
+## :rocket: Funcionalidades
+
+- **Cadastro de Usuários**: Administradores podem cadastrar, editar e excluir usuários do sistema.
+- **Login Seguro**: Sistema de autenticação com diferentes níveis de acesso (Administrador, Professor, Coordenador).
+- **Registro de Presença**: Professores podem marcar a presença dos alunos de forma prática e rápida durante as aulas.
+- **Interface Responsiva**: Layout adaptado para diferentes dispositivos, com design moderno e acessível.
+
+---
+
+## :computer: Tecnologias Utilizadas
+
+- **PHP** (com PDO para acesso seguro ao banco de dados)
+- **MySQL**
+- **HTML5** / **CSS3**
+- **JavaScript** (para interatividade e validações)
+- **Bootstrap** *(opcional, para responsividade e componentes visuais)*
+
+---
+
+### :technologist: Desenvolvido por
+
+*Grupo Block-Brain* 🚀
+### Licença
+
+Este projeto está sob a **Licença FATEC**. Mais informações disponíveis em: (https://fatecitapira.cps.sp.gov.br/)

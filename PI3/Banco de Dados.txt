@@ -1,3 +1,11 @@
+-- DROP DATABASE InstituicaoVestibular;
+
+CREATE DATABASE IF NOT EXISTS InstituicaoVestibular
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
+
+USE InstituicaoVestibular;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -7,149 +15,144 @@ SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS;
 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION;
 SET NAMES utf8mb4;
 
-
-CREATE TABLE aulas_reposicao (
-  id_aula int(11) NOT NULL,
-  reposicao_id int(11) DEFAULT NULL,
-  data_reposicao date NOT NULL,
-  horario_inicio time NOT NULL,
-  horario_fim time NOT NULL
+-- Tabela de Usuários (Secretaria e Professor)
+CREATE TABLE Usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE, -- UNIQUE para evitar duplicidade
+    senha VARCHAR(255) NOT NULL,
+    tipo ENUM('Secretaria', 'Professor') NOT NULL,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    rg VARCHAR(20) NOT NULL UNIQUE,
+    data_nascimento DATE,
+    telefone VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE cursos (
-  id_curso int(11) NOT NULL,
-  nome_curso varchar(100) NOT NULL
+-- Tabela de Alunos
+CREATE TABLE Alunos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    matricula VARCHAR(20) NOT NULL UNIQUE,
+    cpf VARCHAR(11) NOT NULL UNIQUE,
+    rg VARCHAR(20) NOT NULL UNIQUE,
+    data_nascimento DATE,
+    telefone VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE disciplinas (
-  id_disciplina int(11) NOT NULL,
-  nome_disciplina varchar(100) NOT NULL,
-  id_curso int(11) DEFAULT NULL
+-- Tabela de Cursos
+CREATE TABLE Cursos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE justificativas (
-  id_justificativa int(11) NOT NULL,
-  id_usuario int(11) DEFAULT NULL,
-  data_falta_inicio date NOT NULL,
-  data_falta_fim date NOT NULL,
-  tipo_falta varchar(100) NOT NULL,
-  especificacao text DEFAULT NULL,
-  anexo varchar(255) DEFAULT NULL,
-  especifica_falta_medica varchar(100) DEFAULT NULL,
-  especifica_falta_justificada varchar(100) DEFAULT NULL,
-  motivo_justificado text DEFAULT NULL,
-  especifica_falta_legislacao varchar(100) DEFAULT NULL,
-  periodo_dias int(11) DEFAULT NULL,
-  id_curso int DEFAULT NULL,
-  turno_id varchar(50) DEFAULT NULL,
-  horario_inicio time DEFAULT NULL,
-  horario_fim time DEFAULT NULL,
-  data_envio date NOT NULL DEFAULT (CURRENT_DATE),
-  status enum('pendente','aceito','recusado') DEFAULT 'pendente'
+-- Tabela de Disciplinas
+CREATE TABLE Disciplinas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    curso_id INT,
+    nome VARCHAR(100) NOT NULL,
+    carga_horaria INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (curso_id) REFERENCES Cursos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE reposicoes (
-  id_reposicao int(11) NOT NULL,
-  id_usuario int(11) DEFAULT NULL,
-  data_envio date NOT NULL DEFAULT (CURRENT_DATE),
-  comentario text DEFAULT NULL,
-  status enum('pendente','aceito','recusado') DEFAULT 'pendente',
-  turno varchar(50) DEFAULT NULL,
-  motivo varchar(100) DEFAULT NULL,
-  data_nao_ministrada date DEFAULT NULL,
-  data_resposta date DEFAULT NULL,
-  disciplina_nao_ministrada varchar(255) DEFAULT NULL,
-  quantidade_aulas int(11) DEFAULT NULL
+-- Tabela de Turmas
+CREATE TABLE Turmas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    curso_id INT,
+    nome VARCHAR(100) NOT NULL,
+    ano INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (curso_id) REFERENCES Cursos(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-CREATE TABLE usuarios (
-  id_usuario int(11) NOT NULL,
-  nome_usuario varchar(255) NOT NULL,
-  email varchar(255) NOT NULL,
-  senha varchar(255) NOT NULL,
-  tipo_usuario enum('administrador','professor','coordenador') NOT NULL,
-  rm varchar(50) NOT NULL
+-- Professores em Turmas (Relacionamento N:N)
+CREATE TABLE Professores_Turmas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    turma_id INT NOT NULL,
+    docente_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (docente_id) REFERENCES Usuarios(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE aulas_reposicao
-  ADD PRIMARY KEY (id_aula),
-  ADD KEY reposicao_id (reposicao_id);
+-- Disciplinas em Turmas (Relacionamento N:N)
+CREATE TABLE Disciplinas_Turmas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    turma_id INT NOT NULL,
+    disciplina_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (disciplina_id) REFERENCES Disciplinas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE cursos
-  ADD PRIMARY KEY (id_curso);
+-- Alunos em Turmas (Relacionamento N:N)
+CREATE TABLE Alunos_Turmas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    turma_id INT NOT NULL,
+    aluno_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE disciplinas
-  ADD PRIMARY KEY (id_disciplina),
-  ADD KEY id_curso (id_curso);
+-- Aulas (Cronograma)
+CREATE TABLE Aulas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    turma_id INT NOT NULL,
+    data_aula DATE NOT NULL,
+    tema VARCHAR(100),
+    conteudo TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
-ALTER TABLE justificativas
-  ADD PRIMARY KEY (id_justificativa),
-  ADD KEY id_usuario (id_usuario);
-
-
-ALTER TABLE reposicoes
-  ADD PRIMARY KEY (id_reposicao),
-  ADD KEY id_usuario (id_usuario);
-
-ALTER TABLE usuarios
-  ADD PRIMARY KEY (id_usuario),
-  ADD UNIQUE KEY email (email),
-  ADD UNIQUE KEY rm (rm);
-
-
-ALTER TABLE aulas_reposicao
-  MODIFY id_aula int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-
-ALTER TABLE cursos
-  MODIFY id_curso int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
-ALTER TABLE disciplinas
-  MODIFY id_disciplina int(11) NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE justificativas
-  MODIFY id_justificativa int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
-ALTER TABLE reposicoes
-  MODIFY id_reposicao int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-
-ALTER TABLE usuarios
-  MODIFY id_usuario int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
-ALTER TABLE aulas_reposicao
-  ADD CONSTRAINT aulas_reposicao_ibfk_1 FOREIGN KEY (reposicao_id) REFERENCES reposicoes (id_reposicao) ON DELETE CASCADE;
-
-ALTER TABLE disciplinas
-  ADD CONSTRAINT disciplinas_ibfk_1 FOREIGN KEY (id_curso) REFERENCES cursos (id_curso);
-
-ALTER TABLE justificativas
-  ADD CONSTRAINT justificativas_ibfk_1 FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario);
-
-ALTER TABLE reposicoes
-  ADD CONSTRAINT reposicoes_ibfk_1 FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario);
-
+-- Frequência dos Alunos nas Aulas
+CREATE TABLE Frequencia (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    aula_id INT NOT NULL,
+    status ENUM('Presente', 'Ausente') NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (aula_id) REFERENCES Aulas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 COMMIT;
-
-SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT;
-SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS;
-SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION;
-
-
-INSERT INTO cursos (id_curso, nome_curso) VALUES
-(1, 'Gestão da Tecnologia da Informação'),
-(2, 'Gestão da Produção Industrial'),
-(3, 'Gestão Empresarial'),
-(4, 'Desenvolvimento de Software Multiplataforma');
-
-ALTER TABLE justificativas
-  ADD CONSTRAINT justificativas_ibfk_2 FOREIGN KEY (id_curso) REFERENCES cursos (id_curso);
-
-ALTER TABLE reposicoes
-  ADD COLUMN id_justificativa int(11) DEFAULT NULL,
-  ADD CONSTRAINT reposicoes_ibfk_2 FOREIGN KEY (id_justificativa) REFERENCES justificativas (id_justificativa);
-
-INSERT INTO `disciplinas`(`nome_disciplina`, `id_curso`) VALUES 
-('Engenharia de Software II','4'),
-('Banco de Dados Relacional','4'),
-('Técnicas de Programação','4');
-

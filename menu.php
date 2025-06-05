@@ -71,9 +71,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Secretaria') {
 <div class="container">
     <div class="painel-titulo">Painel da Secretaria</div>
     <div class="painel-links">
-        <a href="cadastrar_aluno.php">Cadastrar Aluno</a>
-        <a href="cadastrar_professor.php">Cadastrar Professor</a>
-        <a href="cadastrar_secretaria.php">Cadastrar Secretaria</a>
+        <a href="cadastro.php">Cadastrar</a>
         <a href="criar_turma.php">Criar Turma</a>
         <a href="vincular_alunos_turma.php">Vincular Alunos à Turma</a>
     </div>

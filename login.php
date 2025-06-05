@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         // Redirecionar para o painel apropriado
         if ($usuario['tipo'] == 'Secretaria') {
-            header("Location: painel_secretaria.php");
+            header("Location: menu.php");
             exit;
         } else if ($usuario['tipo'] == 'Professor') {
             header("Location: painel_professor.php");
@@ -87,7 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
             <div class="mt-6 text-center">
-                <a href="Administrador/cadastro.php" class="text-blue-600 hover:underline">Cadastrar</a>
+                <a href="cadastro.php" class="text-blue-600 hover:underline">Cadastrar</a>
             </div>
         </div>
     </div>

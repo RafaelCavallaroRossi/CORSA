@@ -73,7 +73,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="min-h-screen flex items-center justify-center gradient-bg p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
             <div class="text-center mb-8">
-                <img src="https://via.placeholder.com/150x50?text=PréVest+Comunitário" alt="Logo" class="mx-auto h-12">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Cadastro</h1>
                 <p class="text-gray-600">Preencha os dados para cadastrar um usuário</p>
             </div>

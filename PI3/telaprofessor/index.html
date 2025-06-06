@@ -1,96 +1,126 @@
+<?php include 'config.php'; ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel do Professor</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/@phosphor-icons/web"></script>
-  <script src="script.js" defer></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Frequência</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+        }
+    </style>
+    <script>
+        function carregarAulas() {
+            const turmaSelect = document.getElementById("turma_id");
+            const aulaSelect = document.getElementById("aula_id");
+            aulaSelect.innerHTML = ""; // Limpar aulas
+
+            if (turmaSelect.value) {
+                fetch(`get_aulas.php?turma_id=${turmaSelect.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.forEach(aula => {
+                            const option = document.createElement("option");
+                            option.value = aula.id;
+                            option.textContent = `${aula.tema} - ${aula.data_aula}`;
+                            aulaSelect.appendChild(option);
+                        });
+                    });
+            }
+        }
+
+        function carregarFrequencia() {
+            const aulaSelect = document.getElementById("aula_id");
+            const frequenciaDiv = document.getElementById("frequenciaDiv");
+            frequenciaDiv.innerHTML = ""; // Limpar frequências anteriores
+
+            if (aulaSelect.value) {
+                fetch(`get_frequencia.php?Aula_id=${aulaSelect.value}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.length > 0) {
+                            let table = "<table class='min-w-full divide-y divide-gray-200 border'><thead class='bg-gray-100'><tr><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Aluno</th><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Presença</th></tr></thead><tbody class='bg-white divide-y divide-gray-200'>";
+                            data.forEach(item => {
+                                table += `<tr>
+                                              <td class='px-4 py-2'>${item.aluno}</td>
+                                              <td class='px-4 py-2'><input type='checkbox' name='presentes[]' value='${item.id}'></td>
+                                          </tr>`;
+                            });
+                            table += "</tbody></table>";
+                            frequenciaDiv.innerHTML = table;
+                        } else {
+                            frequenciaDiv.innerHTML = "Nenhuma frequência registrada para esta aula.";
+                        }
+                    });
+            }
+        }
+    </script>
 </head>
-<body class="flex bg-gray-100">
+<body class="bg-gray-50 font-sans">
+    <div class="min-h-screen flex items-center justify-center gradient-bg p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mt-4">Registrar Frequência</h1>
+                <p class="text-gray-600">Marque a presença dos alunos na aula selecionada</p>
+            </div>
+            <form method="POST" class="space-y-4">
+                <div>
+                    <label for="turma_id" class="block text-sm font-medium text-gray-700">Turma</label>
+                    <select id="turma_id" name="turma_id" required onchange="carregarAulas()"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Selecione</option>
+                        <?php
+                        $stmt = $conn->query("SELECT * FROM Turmas");
+                        while ($row = $stmt->fetch()) {
+                            echo "<option value='{$row['id']}'>{$row['nome']}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+                <div>
+                    <label for="aula_id" class="block text-sm font-medium text-gray-700">Aula</label>
+                    <select id="aula_id" name="aula_id" required onchange="carregarFrequencia()"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Selecione uma turma primeiro</option>
+                    </select>
+                </div>
+                <div id="frequenciaDiv">
+                    <!-- As frequências serão carregadas aqui -->
+                </div>
+                <div>
+                    <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        Registrar Frequência
+                    </button>
+                </div>
+            </form>
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aula_id'])) {
+                // Registrar presenças
+                foreach ($_POST['presentes'] as $aluno_id) {
+                    $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Presente')");
+                    $stmt->execute([$aluno_id, $_POST['aula_id']]);
+                }
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-white text-gray-800 min-h-screen shadow">
-    <div class="p-6 text-2xl font-bold text-blue-900">Painel Professor</div>
-    <nav class="flex flex-col gap-4 px-6">
-      <button onclick="showSection('dashboard')" class="flex items-center gap-2 border border-gray-200 hover:bg-blue-50 p-2 rounded">
-        <i class="ph ph-chart-bar text-blue-700"></i> Dashboard
-      </button>
-      <button onclick="showSection('turmas')" class="flex items-center gap-2 border border-gray-200 hover:bg-blue-50 p-2 rounded">
-        <i class="ph ph-books text-green-700"></i> Minhas Turmas
-      </button>
-      <button onclick="showSection('alunos')" class="flex items-center gap-2 border border-gray-200 hover:bg-blue-50 p-2 rounded">
-        <i class="ph ph-student text-yellow-700"></i> Cadastrar Alunos
-      </button>
-      <button onclick="showSection('frequencia')" class="flex items-center gap-2 border border-gray-200 hover:bg-blue-50 p-2 rounded">
-        <i class="ph ph-clipboard text-red-700"></i> Frequência
-      </button>
-      <button class="flex items-center gap-2 border border-gray-200 hover:bg-blue-50 p-2 rounded mt-10">
-        <i class="ph ph-sign-out text-gray-600"></i> Sair
-      </button>
-    </nav>
-  </aside>
+                // Registrar alunos ausentes
+                $stmt = $conn->prepare("SELECT Alunos.id FROM Alunos");
+                $stmt->execute();
+                $todos_alunos = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-  <!-- Conteúdo -->
-  <main class="flex-1 p-8">
+                foreach ($todos_alunos as $aluno_id) {
+                    if (!in_array($aluno_id, $_POST['presentes'])) {
+                        $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Ausente')");
+                        $stmt->execute([$aluno_id, $_POST['aula_id']]);
+                    }
+                }
 
-    <!-- Dashboard -->
-    <section id="dashboard">
-      <h1 class="text-3xl font-bold mb-6">Minhas Turmas</h1>
-      <div id="dashboardTurmas" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Cards gerados pelo JavaScript -->
-      </div>
-
-      <!-- Modal de alunos -->
-      <div id="modalTurma" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 w-full max-w-xl">
-          <h2 id="modalTitulo" class="text-2xl font-bold mb-4"></h2>
-          <ul id="listaAlunosModal" class="space-y-2"></ul>
-          <button onclick="fecharModal()" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Fechar</button>
+                echo "<div class='mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4' role='alert'>Frequência registrada com sucesso!</div>";
+            }
+            ?>
         </div>
-      </div>
-    </section>
-
-    <!-- Minhas Turmas -->
-    <section id="turmas" class="hidden">
-      <h1 class="text-3xl font-bold mb-6">Minhas Turmas</h1>
-      <div class="bg-white p-6 rounded shadow">
-        <form id="formTurma" class="flex gap-4 mb-4">
-          <input id="nomeTurma" type="text" placeholder="Nome da Turma" class="border rounded p-2 w-full" required />
-          <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">Criar Turma</button>
-        </form>
-        <ul id="listaTurmas" class="space-y-2"></ul>
-      </div>
-    </section>
-
-    <!-- Cadastrar Alunos -->
-    <section id="alunos" class="hidden">
-      <h1 class="text-3xl font-bold mb-6">Cadastrar Alunos</h1>
-      <div class="bg-white p-6 rounded shadow">
-        <form id="formAluno" class="flex gap-4 mb-4">
-          <input id="nomeAluno" type="text" placeholder="Nome do Aluno" class="border rounded p-2 w-full" required />
-          <select id="turmaAluno" class="border rounded p-2" required></select>
-          <button type="submit" class="bg-blue-700 text-white px-4 py-2 rounded">Adicionar Aluno</button>
-        </form>
-        <ul id="listaAlunos" class="space-y-2"></ul>
-      </div>
-    </section>
-
-    <!-- Frequência -->
-    <section id="frequencia" class="hidden">
-      <h1 class="text-3xl font-bold mb-6">Frequência</h1>
-      <div class="bg-white p-6 rounded shadow">
-        <div class="flex gap-4 mb-4">
-          <select id="turmaFrequencia" class="border rounded p-2 w-full"></select>
-          <input type="date" id="dataFrequencia" class="border rounded p-2" />
-          <button onclick="gerarListaFrequencia()" class="bg-blue-700 text-white px-4 py-2 rounded">Gerar Lista</button>
-        </div>
-        <ul id="listaFrequencia" class="space-y-2"></ul>
-      </div>
-    </section>
-
-  </main>
-
+    </div>
 </body>
 </html>

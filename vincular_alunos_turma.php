@@ -20,15 +20,6 @@
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Vincular Alunos à Turma</h1>
                 <p class="text-gray-600">Selecione a turma e os alunos para vincular</p>
             </div>
-            <?php
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                echo '<div class="mb-4">
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                            Alunos vinculados à turma com sucesso!
-                        </div>
-                      </div>';
-            }
-            ?>
             <form method="POST" class="space-y-4">
                 <div>
                     <label for="turma_id" class="block text-sm font-medium text-gray-700">Turma</label>
@@ -55,13 +46,28 @@
                     </select>
                     <span class="text-xs text-gray-500">Segure Ctrl (Windows) ou Command (Mac) para selecionar vários alunos.</span>
                 </div>
-                <div>
-                    <button type="submit"
-                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        Vincular Alunos
-                    </button>
+                <div class="flex justify-end space-x-2">
+                    <a href="menu.php" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
+                    <button type="submit" class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Vincular Alunos</button>
                 </div>
             </form>
+            <?php
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                // Vinculação dos alunos à turma
+                $turma_id = $_POST['turma_id'];
+                $alunos_ids = $_POST['alunos'];
+                foreach ($_POST['alunos'] as $aluno_id) {
+                    $stmt = $conn->prepare("INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES (?, ?)");
+                    $stmt->execute([$_POST['turma_id'], $aluno_id]);
+                }
+                echo '<div class="mb-4">
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                            Alunos vinculados à turma com sucesso!
+                        </div>
+                      </div>';
+                echo '<script>setTimeout(() => { window.location.href = "menu.php"; }, 2000);</script>';
+            }
+            ?>
         </div>
     </div>
 </body>

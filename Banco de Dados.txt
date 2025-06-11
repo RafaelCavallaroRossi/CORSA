@@ -1,103 +1,148 @@
-DROP DATABASE InstituicaoVestibular;
+-- DROP DATABASE InstituicaoVestibular;
 
-CREATE DATABASE IF NOT EXISTS InstituicaoVestibular;
+CREATE DATABASE IF NOT EXISTS InstituicaoVestibular
+    DEFAULT CHARACTER SET utf8mb4
+    DEFAULT COLLATE utf8mb4_general_ci;
 
 USE InstituicaoVestibular;
 
--- Tabela para Usuários (Professores e Secretarias)
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT;
+SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS;
+SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION;
+SET NAMES utf8mb4;
+
 CREATE TABLE Usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE, -- UNIQUE para evitar duplicidade
     senha VARCHAR(255) NOT NULL,
     tipo ENUM('Secretaria', 'Professor') NOT NULL,
     matricula VARCHAR(20) NOT NULL UNIQUE,
     cpf VARCHAR(11) NOT NULL UNIQUE,
     rg VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE,
-    telefone VARCHAR(15)
-);
+    telefone VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Alunos
 CREATE TABLE Alunos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
     matricula VARCHAR(20) NOT NULL UNIQUE,
     cpf VARCHAR(11) NOT NULL UNIQUE,
     rg VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE,
-    telefone VARCHAR(15)
-);
+    telefone VARCHAR(15),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Cursos
 CREATE TABLE Cursos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    descricao TEXT
-);
+    descricao TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Disciplinas
 CREATE TABLE Disciplinas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     curso_id INT,
     nome VARCHAR(100) NOT NULL,
     carga_horaria INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (curso_id) REFERENCES Cursos(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Turmas
 CREATE TABLE Turmas (
     id INT AUTO_INCREMENT PRIMARY KEY,
     curso_id INT,
     nome VARCHAR(100) NOT NULL,
     ano INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (curso_id) REFERENCES Cursos(id)
-);
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Professores em Turmas
 CREATE TABLE Professores_Turmas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    docente_id INT,
-    FOREIGN KEY (turma_id) REFERENCES Turmas(id),
+    turma_id INT NOT NULL,
+    docente_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     FOREIGN KEY (docente_id) REFERENCES Usuarios(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Disciplinas em Turmas
 CREATE TABLE Disciplinas_Turmas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    disciplina_id INT,
-    FOREIGN KEY (turma_id) REFERENCES Turmas(id),
+    turma_id INT NOT NULL,
+    disciplina_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     FOREIGN KEY (disciplina_id) REFERENCES Disciplinas(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Alunos em Turmas
 CREATE TABLE Alunos_Turmas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    aluno_id INT,
-    FOREIGN KEY (turma_id) REFERENCES Turmas(id),
+    turma_id INT NOT NULL,
+    aluno_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (turma_id) REFERENCES Turmas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Aulas (Cronograma)
 CREATE TABLE Aulas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    turma_id INT,
-    data_aula DATE,
+    turma_id INT NOT NULL,
+    data_aula DATE NOT NULL,
     tema VARCHAR(100),
     conteudo TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (turma_id) REFERENCES Turmas(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Tabela para Frequência
 CREATE TABLE Frequencia (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    aluno_id INT,
-    aula_id INT,
+    aluno_id INT NOT NULL,
+    aula_id INT NOT NULL,
     status ENUM('Presente', 'Ausente') NOT NULL,
-    FOREIGN KEY (aluno_id) REFERENCES Alunos(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
     FOREIGN KEY (aula_id) REFERENCES Aulas(id)
-);
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+COMMIT;

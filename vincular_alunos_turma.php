@@ -1,4 +1,6 @@
-<?php include 'config.php'; ?>
+<?php include 'config.php';
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -14,7 +16,25 @@
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-    <div class="min-h-screen flex items-center justify-center gradient-bg p-4">
+
+    <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-school text-2xl"></i>
+            <span class="font-bold text-lg">Escolinha do...</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <?php if (isset($_SESSION['usuario_id'])): ?>
+                <span class="hidden sm:inline">
+                    Olá, <?php echo htmlspecialchars($_SESSION['nome'] ?? $_SESSION['tipo'] ?? 'Usuário'); ?>
+                </span>
+                <form action="logout.php" method="post" class="inline">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white font-medium transition">Sair</button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <div class="w-full h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Vincular Alunos à Turma</h1>

@@ -6,75 +6,59 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Secretaria') {
 }
 ?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel da Secretaria</title>
-    <link rel="stylesheet" href="../geral.css"> 
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .link-button {
-            display: inline-block;
-            padding: 8px 15px;
-            background-color: #c20000;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 0.9em;
-            font-weight: bold;
-            transition: background-color 0.3s;
-            margin-right: 10px;
-        }
-        .link-button:hover {
-            background-color: #ff0000d7;
-        }
-        .navbar-nav {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .subtitulo {
-            display: block;
-            margin-top: 10px;
-            font-weight: bold;
-        }
-        .painel-links {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 15px;
-        }
-        .painel-links a {
-            background: #1e3a8a;
-            color: #fff;
-            padding: 10px 18px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: background 0.3s;
-        }
-        .painel-links a:hover {
-            background: #065f46;
-        }
-        .painel-titulo {
-            margin-top: 30px;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #1e3a8a;
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
         }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 font-sans">
 
-<div class="container">
-    <div class="painel-titulo">Painel da Secretaria</div>
-    <div class="painel-links">
-        <a href="cadastro.php">Cadastrar</a>
-        <a href="criar_turma.php">Criar Turma</a>
-        <a href="vincular_alunos_turma.php">Vincular Alunos à Turma</a>
+    <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-school text-2xl"></i>
+            <span class="font-bold text-lg">Escolinha do...</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <?php if (isset($_SESSION['usuario_id'])): ?>
+                <span class="hidden sm:inline">
+                    Olá, <?php echo htmlspecialchars($_SESSION['nome'] ?? $_SESSION['tipo'] ?? 'Usuário'); ?>
+                </span>
+                <form action="logout.php" method="post" class="inline">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white font-medium transition">Sair</button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <div class="w-full h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mt-4">Painel da Secretaria</h1>
+                <p class="text-gray-600">Gerencie as funções administrativas do sistema</p>
+            </div>
+            <div class="space-y-4">
+                <a href="cadastro.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Cadastrar Usuário
+                </a>
+                <a href="criar_turma.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Criar Turma
+                </a>
+                <a href="criar_curso.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Criar Curso
+                </a>
+                <a href="vincular_alunos_turma.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Vincular Alunos à Turma
+                </a>
+            </div>
+        </div>
     </div>
-</div>
 </body>
 </html>

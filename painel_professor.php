@@ -51,14 +51,11 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Professor') {
                 <p class="text-gray-600">Acesse suas funções como professor</p>
             </div>
             <div class="space-y-4">
-                <a href="lista_frequencia.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
-                    Registrar Frequência
+                <a href="lista_aulas.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Ver Aulas
                 </a>
                 <a href="painel_frequencia.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
                     Ver Frequência das Aulas
-                </a>
-                <a href="lista_aulas.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
-                    Ver Aulas
                 </a>
                 <a href="cronograma_aulas.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
                     Criar Cronograma de Aulas

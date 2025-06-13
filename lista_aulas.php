@@ -63,7 +63,7 @@
                             <td class='px-4 py-2'>{$aula['tema']}</td>
                             <td class='px-4 py-2'>{$aula['conteudo']}</td>
                             <td class='px-4 py-2'>
-                                <a href='lista_frequencia.php?aula_id={$aula['id']}' class='text-blue-600 hover:underline'>Registrar Frequência</a>
+                                <a href='lista_frequencia.php?aula_id={$aula['id']}&turma_id={$aula['turma_id']}' class='text-blue-600 hover:underline'>Registrar Frequência</a>
                             </td>
                           </tr>";
                 }

@@ -158,46 +158,38 @@ INSERT INTO Disciplinas (curso_id, nome, carga_horaria) VALUES
 
 -- Inserir Usuários (Secretaria e Professores)
 INSERT INTO Usuarios (nome, email, senha, matricula, cpf, rg, data_nascimento, telefone, tipo) VALUES
-('Secretaria', 'secretaria@example.com', '$2y$10$wZ1tG5s1I4R8q3/2m2SdeO6M2f8n8Q8Qz0z8Y7Qn6c1N6m9B1EUiG', 'SEC001', '12345678901', 'RG1234567', '1990-01-01', '11987654321', 'Secretaria'),
-('Professor 1', 'professor1@example.com', '$2y$10$wZ1tG5s1I4R8q3/2m2SdeO6M2f8n8Q8Qz0z8Y7Qn6c1N6m9B1EUiG', 'PROF001', '12345678902', 'RG1234568', '1985-02-02', '11987654322', 'Professor'),
-('Professor 2', 'professor2@example.com', '$2y$10$wZ1tG5s1I4R8q3/2m2SdeO6M2f8n8Q8Qz0z8Y7Qn6c1N6m9B1EUiG', 'PROF002', '12345678903', 'RG1234569', '1986-03-03', '11987654323', 'Professor');
+('Admim Master', 'secretaria@escola.com', '$2y$10$ul4Wr3Bqq2Cz1ElJtFua2e0Ku9cGVZxcP1yW8vdCKTbdu/7pnVqcq', 'SEC001', '12345678901', 'RG1234567', '1990-01-01', '11987654321', 'Secretaria'),
+('Fernando Noronha', 'professor1@escola.com', '$2y$10$f/RAKSbRNGg6h8LQJ3AxTOCY3vIF6TqGKfWDZHv/NhEncKWvAgvRm', 'PROF001', '12345678902', 'RG1234568', '1985-02-02', '11987654322', 'Professor');
 
 -- Inserir Turmas
 INSERT INTO Turmas (curso_id, nome, ano) VALUES
-(1, 'Turma A', 2023),
-(1, 'Turma B', 2023);
+(1, 'Turma A', 2023);
+
 
 -- Inserir Professores em Turmas
 INSERT INTO Professores_Turmas (turma_id, docente_id) VALUES
-(1, 2),  -- Professor 1 na Turma A
-(2, 3);  -- Professor 2 na Turma B
+(1, 2);  -- Professor 1 na Turma A
 
 -- Inserir Disciplinas em Turmas
 INSERT INTO Disciplinas_Turmas (turma_id, disciplina_id) VALUES
 (1, 1),  -- Disciplina 1 na Turma A
-(1, 2),  -- Disciplina 2 na Turma A
-(2, 1),  -- Disciplina 1 na Turma B
-(2, 2);  -- Disciplina 2 na Turma B
+(1, 2);  -- Disciplina 2 na Turma A
+
 
 -- Inserir Alunos
 INSERT INTO Alunos (nome, email, matricula, cpf, rg, data_nascimento, telefone) VALUES
 ('Alice Silva', 'alice.silva@example.com', 'ALU001', '12345678904', 'RG1234570', '2000-03-03', '11987654324'),
 ('Bruno Oliveira', 'bruno.oliveira@example.com', 'ALU002', '12345678905', 'RG1234571', '2001-04-04', '11987654325'),
-('Carla Pereira', 'carla.pereira@example.com', 'ALU003', '12345678906', 'RG1234572', '2002-05-05', '11987654326'),
-('Daniel Costa', 'daniel.costa@example.com', 'ALU004', '12345678907', 'RG1234573', '2003-06-06', '11987654327'),
-('Eva Santos', 'eva.santos@example.com', 'ALU005', '12345678908', 'RG1234574', '2004-07-07', '11987654328');
+('Carla Pereira', 'carla.pereira@example.com', 'ALU003', '12345678906', 'RG1234572', '2002-05-05', '11987654326');
+
 
 -- Inserir Alunos em Turmas
 INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES
 (1, 1),  -- Alice na Turma A
 (1, 2),  -- Bruno na Turma A
-(1, 3),  -- Carla na Turma A
-(2, 4),  -- Daniel na Turma B
-(2, 5);  -- Eva na Turma B
+(1, 3);  -- Carla na Turma A
 
 -- Inserir Aulas
 INSERT INTO Aulas (turma_id, data_aula, tema, conteudo) VALUES
 (1, '2023-09-01', 'Introdução à Matemática I', 'Conteúdo da aula 1'),
-(1, '2023-09-08', 'Continuação Matemática I', 'Conteúdo da aula 2'),
-(2, '2023-09-02', 'Introdução à Matemática II', 'Conteúdo da aula 1'),
-(2, '2023-09-09', 'Continuação Matemática II', 'Conteúdo da aula 2');
+(1, '2023-09-08', 'Continuação Matemática I', 'Conteúdo da aula 2');

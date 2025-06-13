@@ -44,33 +44,45 @@
             <?php
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['aula_id'])) {
                 $aula_id = $_GET['aula_id'];
-                $stmt = $conn->prepare("
-                    SELECT Alunos.nome AS aluno, Frequencia.status 
-                    FROM Frequencia 
-                    JOIN Alunos ON Frequencia.aluno_id = Alunos.id 
-                    WHERE Frequencia.aula_id = ?
-                ");
-                $stmt->execute([$aula_id]);
-                $frequencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                if ($frequencias) {
-                    echo "<div class='overflow-x-auto'><table class='min-w-full divide-y divide-gray-200 border'>
-                            <thead class='bg-gray-100'>
-                                <tr>
-                                    <th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Aluno</th>
-                                    <th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class='bg-white divide-y divide-gray-200'>";
-                    foreach ($frequencias as $row) {
-                        echo "<tr>
-                                <td class='px-4 py-2'>{$row['aluno']}</td>
-                                <td class='px-4 py-2'>{$row['status']}</td>
-                              </tr>";
+                // Obter a turma da aula
+                $stmt = $conn->prepare("SELECT turma_id FROM Aulas WHERE id = ?");
+                $stmt->execute([$aula_id]);
+                $turma_id = $stmt->fetchColumn();
+
+                // Verificar se a turma foi encontrada
+                if ($turma_id) {
+                    $stmt = $conn->prepare("
+                        SELECT Alunos.nome AS aluno, Frequencia.status 
+                        FROM Frequencia 
+                        JOIN Alunos ON Frequencia.aluno_id = Alunos.id 
+                        JOIN Alunos_Turmas ON Alunos.id = Alunos_Turmas.aluno_id 
+                        WHERE Frequencia.aula_id = ? AND Alunos_Turmas.turma_id = ?
+                    ");
+                    $stmt->execute([$aula_id, $turma_id]);
+                    $frequencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    if ($frequencias) {
+                        echo "<div class='overflow-x-auto'><table class='min-w-full divide-y divide-gray-200 border'>
+                                <thead class='bg-gray-100'>
+                                    <tr>
+                                        <th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Aluno</th>
+                                        <th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class='bg-white divide-y divide-gray-200'>";
+                        foreach ($frequencias as $row) {
+                            echo "<tr>
+                                    <td class='px-4 py-2'>{$row['aluno']}</td>
+                                    <td class='px-4 py-2'>{$row['status']}</td>
+                                  </tr>";
+                        }
+                        echo "</tbody></table></div>";
+                    } else {
+                        echo "<div class='mt-4 text-center text-gray-600'>Nenhuma frequência registrada para esta aula.</div>";
                     }
-                    echo "</tbody></table></div>";
                 } else {
-                    echo "<div class='mt-4 text-center text-gray-600'>Nenhuma frequência registrada para esta aula.</div>";
+                    echo "<div class='mt-4 text-center text-gray-600'>Aula não encontrada.</div>";
                 }
             }
             ?>

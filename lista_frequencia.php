@@ -33,30 +33,36 @@
         }
 
         function carregarFrequencia() {
-            const aulaSelect = document.getElementById("aula_id");
-            const frequenciaDiv = document.getElementById("frequenciaDiv");
-            frequenciaDiv.innerHTML = ""; // Limpar frequências anteriores
+    const aulaSelect = document.getElementById("aula_id");
+    const frequenciaDiv = document.getElementById("frequenciaDiv");
+    frequenciaDiv.innerHTML = ""; // Limpar frequências anteriores
 
-            if (aulaSelect.value) {
-                fetch(`get_frequencia.php?Aula_id=${aulaSelect.value}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.length > 0) {
-                            let table = "<table class='min-w-full divide-y divide-gray-200 border'><thead class='bg-gray-100'><tr><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Aluno</th><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Presença</th></tr></thead><tbody class='bg-white divide-y divide-gray-200'>";
-                            data.forEach(item => {
-                                table += `<tr>
-                                              <td class='px-4 py-2'>${item.aluno}</td>
-                                              <td class='px-4 py-2'><input type='checkbox' name='presentes[]' value='${item.id}'></td>
-                                          </tr>`;
-                            });
-                            table += "</tbody></table>";
-                            frequenciaDiv.innerHTML = table;
-                        } else {
-                            frequenciaDiv.innerHTML = "Nenhuma frequência registrada para esta aula.";
-                        }
+    if (aulaSelect.value) {
+        fetch(`get_frequencia.php?Aula_id=${aulaSelect.value}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    let table = "<table class='min-w-full divide-y divide-gray-200 border'><thead class='bg-gray-100'><tr><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Aluno</th><th class='px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase'>Presença</th></tr></thead><tbody class='bg-white divide-y divide-gray-200'>";
+                    data.forEach(item => {
+                        table += `<tr>
+                                      <td class='px-4 py-2'>${item.aluno}</td>
+                                      <td class='px-4 py-2'><input type='checkbox' name='presentes[]' value='${item.id}'></td>
+                                  </tr>`;
                     });
-            }
-        }
+                    table += "</tbody></table>";
+                    frequenciaDiv.innerHTML = table;
+                } else {
+                    frequenciaDiv.innerHTML = "Nenhum aluno encontrado para esta aula.";
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar frequência:', error);
+                frequenciaDiv.innerHTML = "Erro ao carregar os dados.";
+            });
+    } else {
+        frequenciaDiv.innerHTML = "Selecione uma aula.";
+    }
+}
     </script>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -83,10 +89,10 @@
                 <div>
                     <label for="aula_id" class="block text-sm font-medium text-gray-700">Aula</label>
                     <select id="aula_id" name="aula_id" required onchange="carregarFrequencia()"
-                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option value="">Selecione uma turma primeiro</option>
-                    </select>
-                </div>
+                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Selecione uma turma primeiro</option>
+                </select>
+
                 <div id="frequenciaDiv">
                     <!-- As frequências serão carregadas aqui -->
                 </div>
@@ -99,27 +105,39 @@
             </form>
             <?php
             if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['aula_id'])) {
-                // Registrar presenças
-                foreach ($_POST['presentes'] as $aluno_id) {
-                    $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Presente')");
-                    $stmt->execute([$aluno_id, $_POST['aula_id']]);
-                }
+    // Verificar se já foi registrada a frequência para a aula
+    $aula_id = $_POST['aula_id'];
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM Frequencia WHERE aula_id = ?");
+    $stmt->execute([$aula_id]);
+    $frequencia_existente = $stmt->fetchColumn();
 
-                // Registrar alunos ausentes
-                $stmt = $conn->prepare("SELECT Alunos.id FROM Alunos");
-                $stmt->execute();
-                $todos_alunos = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-                foreach ($todos_alunos as $aluno_id) {
-                    if (!in_array($aluno_id, $_POST['presentes'])) {
-                        $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Ausente')");
-                        $stmt->execute([$aluno_id, $_POST['aula_id']]);
-                    }
-                }
-
-                echo "<div class='mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4' role='alert'>Frequência registrada com sucesso!</div>";
+    if ($frequencia_existente > 0) {
+        echo '<div class="mt-6 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative mb-4" role="alert">Frequência já registrada para esta aula!</div>';
+    } else {
+        // Registrar presenças
+        if (isset($_POST['presentes'])) {
+            foreach ($_POST['presentes'] as $aluno_id) {
+                $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Presente')");
+                $stmt->execute([$aluno_id, $aula_id]);
             }
-            ?>
+        }
+
+        // Registrar alunos ausentes
+        $stmt = $conn->prepare("SELECT Alunos.id FROM Alunos");
+        $stmt->execute();
+        $todos_alunos = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        foreach ($todos_alunos as $aluno_id) {
+            if (!isset($_POST['presentes']) || !in_array($aluno_id, $_POST['presentes'])) {
+                $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Ausente')");
+                $stmt->execute([$aluno_id, $aula_id]);
+            }
+        }
+
+        echo '<div class="mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Frequência registrada com sucesso!</div>';
+    }
+}
+?>
         </div>
     </div>
 </body>

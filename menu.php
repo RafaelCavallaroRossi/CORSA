@@ -20,7 +20,6 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Secretaria') {
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-
     <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
         <div class="flex items-center space-x-2">
             <i class="fa-solid fa-school text-2xl"></i>
@@ -37,8 +36,7 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Secretaria') {
             <?php endif; ?>
         </div>
     </header>
-
-    <div class="w-full h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
+    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Painel da Secretaria</h1>
@@ -48,11 +46,11 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Secretaria') {
                 <a href="cadastro.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
                     Cadastrar Usuário
                 </a>
-                <a href="criar_turma.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
-                    Criar Turma
-                </a>
                 <a href="criar_curso.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
                     Criar Curso
+                </a>
+                <a href="criar_turma.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
+                    Criar Turma
                 </a>
                 <a href="vincular_alunos_turma.php" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 block text-center">
                     Vincular Alunos à Turma

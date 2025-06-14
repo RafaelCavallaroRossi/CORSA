@@ -1,4 +1,5 @@
 <?php include 'config.php'; ?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -24,7 +25,6 @@
             <span class="font-bold text-lg">Escolinha do...</span>
         </div>
         <div class="flex items-center space-x-4">
-            <?php session_start(); if (isset($_SESSION['usuario_id'])): ?>
                 <span class="hidden sm:inline">
                     Olá, <?php echo htmlspecialchars($_SESSION['nome'] ?? $_SESSION['tipo'] ?? 'Usuário'); ?>
                 </span>
@@ -34,8 +34,6 @@
             <?php endif; ?>
         </div>
     </header>
-
-    <div class="w-full h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Lista de Aulas</h1>
@@ -85,7 +83,7 @@
                             <td class='px-4 py-2'>{$aula['tema']}</td>
                             <td class='px-4 py-2'>{$aula['conteudo']}</td>
                             <td class='px-4 py-2'>
-                                <a href='lista_frequencia.php?aula_id={$aula['id']}' class='text-blue-600 hover:underline'>Registrar Frequência</a>
+                                <a href='lista_frequencia.php?aula_id={$aula['id']}&turma_id={$aula['turma_id']}' class='text-blue-600 hover:underline'>Registrar Frequência</a>
                             </td>
                           </tr>";
                 }

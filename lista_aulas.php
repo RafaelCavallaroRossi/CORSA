@@ -12,9 +12,6 @@
         .gradient-bg {
             background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
         }
-        body {
-            overflow: hidden;
-        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">

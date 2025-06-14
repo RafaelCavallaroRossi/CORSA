@@ -1,8 +1,6 @@
 <?php
 session_start();
 include 'config.php';
-
-// Verificação de sessão
 if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Professor') {
     header("Location: login.php");
     exit;
@@ -23,7 +21,6 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Professor') {
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-
     <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
         <div class="flex items-center space-x-2">
             <i class="fa-solid fa-school text-2xl"></i>
@@ -40,7 +37,6 @@ if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] != 'Professor') {
             <?php endif; ?>
         </div>
     </header>
-
     <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">

@@ -12,6 +12,9 @@
         .gradient-bg {
             background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
         }
+        body {
+            overflow: hidden;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
@@ -22,7 +25,6 @@
             <span class="font-bold text-lg">Escolinha do...</span>
         </div>
         <div class="flex items-center space-x-4">
-            <?php if (isset($_SESSION['usuario_id'])): ?>
                 <span class="hidden sm:inline">
                     Olá, <?php echo htmlspecialchars($_SESSION['nome'] ?? $_SESSION['tipo'] ?? 'Usuário'); ?>
                 </span>
@@ -32,8 +34,6 @@
             <?php endif; ?>
         </div>
     </header>
-
-    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Lista de Aulas</h1>

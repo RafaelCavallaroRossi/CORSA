@@ -1,22 +1,16 @@
 <?php
 include 'config.php';
 session_start();
-
 $aula_id = $_GET['aula_id'] ?? null;
 $turma_id = null;
 $aula = null;
 $alunos = [];
-
 if ($aula_id) {
-    // Obter dados da aula e turma
     $stmt = $conn->prepare("SELECT * FROM Aulas WHERE id = ?");
     $stmt->execute([$aula_id]);
     $aula = $stmt->fetch(PDO::FETCH_ASSOC);
-
     if ($aula) {
         $turma_id = $aula['turma_id'];
-
-        // Obter alunos da turma
         $stmt = $conn->prepare("
             SELECT Alunos.id, Alunos.nome
             FROM Alunos
@@ -28,27 +22,19 @@ if ($aula_id) {
         $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
-
-// Processar submissão do formulário
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
     $aula_id_post = $_POST['aula_id'];
-
-    // Verificar se frequência já foi registrada para esta aula
     $stmt = $conn->prepare("SELECT COUNT(*) FROM Frequencia WHERE aula_id = ?");
     $stmt->execute([$aula_id_post]);
     $frequencia_existente = $stmt->fetchColumn();
-
     if ($frequencia_existente > 0) {
         $msg = ['type' => 'warning', 'text' => 'Frequência já registrada para esta aula!'];
     } else {
-        // Registrar presenças
         $presentes = $_POST['presentes'] ?? [];
         foreach ($presentes as $aluno_id) {
             $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Presente')");
             $stmt->execute([$aluno_id, $aula_id_post]);
         }
-
-        // Registrar ausentes (apenas alunos daquela turma)
         $stmt = $conn->prepare("
             SELECT Alunos.id
             FROM Alunos
@@ -59,19 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
         ");
         $stmt->execute([$aula_id_post]);
         $todos_alunos = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
         foreach ($todos_alunos as $aluno_id) {
             if (!in_array($aluno_id, $presentes)) {
                 $stmt = $conn->prepare("INSERT INTO Frequencia (aluno_id, aula_id, status) VALUES (?, ?, 'Ausente')");
                 $stmt->execute([$aluno_id, $aula_id_post]);
             }
         }
-
         $msg = ['type' => 'success', 'text' => 'Frequência registrada com sucesso!'];
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -87,7 +70,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-
     <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
         <div class="flex items-center space-x-2">
             <i class="fa-solid fa-school text-2xl"></i>
@@ -104,14 +86,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
             <?php endif; ?>
         </div>
     </header>
-
     <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Registrar Frequência</h1>
                 <p class="text-gray-600">Marque os alunos presentes nesta aula</p>
             </div>
-
             <?php if (!empty($msg)): ?>
                 <div class="mb-4 px-4 py-3 rounded <?php
                     echo $msg['type'] === 'success' ? 'bg-green-100 text-green-700 border border-green-400' : 'bg-yellow-100 text-yellow-700 border border-yellow-400';
@@ -119,30 +99,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
                     <?php echo htmlspecialchars($msg['text']); ?>
                 </div>
             <?php endif; ?>
-
             <?php if (!$aula): ?>
                 <p class="text-red-600">Aula não encontrada ou parâmetro inválido.</p>
                 <a href="lista_aulas.php" class="text-blue-600 hover:underline">Voltar para lista de aulas</a>
             <?php else: ?>
                 <form method="POST">
                     <input type="hidden" name="aula_id" value="<?php echo $aula['id']; ?>" />
-
                     <div class="mb-4">
                         <label class="block font-medium text-gray-700 mb-1">Turma</label>
                         <input type="text" disabled value="<?php
-                            // Obter nome da turma
                             $stmt = $conn->prepare("SELECT nome FROM Turmas WHERE id = ?");
                             $stmt->execute([$turma_id]);
                             echo htmlspecialchars($stmt->fetchColumn());
                         ?>" class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
                     </div>
-
                     <div class="mb-4">
                         <label class="block font-medium text-gray-700 mb-1">Aula</label>
                         <input type="text" disabled value="<?php echo htmlspecialchars($aula['tema'] . ' - ' . $aula['data_aula']); ?>"
                             class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
                     </div>
-
                     <div class="mb-6">
                         <label class="block font-medium text-gray-700 mb-2">Alunos</label>
                         <?php if (count($alunos) === 0): ?>
@@ -168,11 +143,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
                             </table>
                         <?php endif; ?>
                     </div>
-
-                    <div class="flex justify-end space-x-2">
-                        <a href="lista_aulas.php" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
+                    <div class="flex flex-col sm:flex-row justify-end sm:space-x-2 space-y-2 sm:space-y-0">
+                        <a href="painel_professor.php" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
                         <button type="submit"
-                            class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Registrar Frequência
                         </button>
                     </div>

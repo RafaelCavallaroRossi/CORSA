@@ -14,7 +14,6 @@
     </style>
 </head>
 <body class="bg-gray-50 font-sans">
-
     <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
         <div class="flex items-center space-x-2">
             <i class="fa-solid fa-school text-2xl"></i>
@@ -31,8 +30,7 @@
             <?php endif; ?>
         </div>
     </header>
-
-    <div class="w-full h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
+    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Listas de Frequência</h1>
@@ -52,10 +50,10 @@
                         ?>
                     </select>
                 </div>
-                <div class="flex justify-end space-x-2">
-                    <a href="painel_professor.php" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
+                <div class="flex flex-col sm:flex-row justify-end sm:space-x-2 space-y-2 sm:space-y-0">
+                    <a href="painel_professor.php" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
                     <button type="submit"
-                        class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         Ver Frequência
                     </button>
                 </div>
@@ -63,13 +61,9 @@
             <?php
             if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['aula_id'])) {
                 $aula_id = $_GET['aula_id'];
-
-                // Obter a turma da aula
                 $stmt = $conn->prepare("SELECT turma_id FROM Aulas WHERE id = ?");
                 $stmt->execute([$aula_id]);
                 $turma_id = $stmt->fetchColumn();
-
-                // Verificar se a turma foi encontrada
                 if ($turma_id) {
                     $stmt = $conn->prepare("
                         SELECT Alunos.nome AS aluno, Frequencia.status 
@@ -80,7 +74,6 @@
                     ");
                     $stmt->execute([$aula_id, $turma_id]);
                     $frequencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
                     if ($frequencias) {
                         echo "<div class='overflow-x-auto'><table class='min-w-full divide-y divide-gray-200 border'>
                                 <thead class='bg-gray-100'>

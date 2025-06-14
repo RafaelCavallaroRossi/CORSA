@@ -1,15 +1,10 @@
 <?php
 include 'config.php';
-
 if (isset($_GET['Aula_id'])) {
     $aula_id = $_GET['Aula_id'];
-
-    // Obter a turma associada à aula
     $stmt = $conn->prepare("SELECT turma_id FROM Aulas WHERE id = ?");
     $stmt->execute([$aula_id]);
     $turma_id = $stmt->fetchColumn();
-
-    // Obter os alunos da turma correspondente
     if ($turma_id) {
         $stmt = $conn->prepare("
             SELECT Alunos.id, Alunos.nome AS aluno 

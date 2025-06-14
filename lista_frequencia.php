@@ -79,76 +79,106 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['aula_id'])) {
     <title>Registrar Frequência</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
+        }
+    </style>
 </head>
 <body class="bg-gray-50 font-sans">
-<div class="min-h-screen flex items-center justify-center gradient-bg p-4">
-    <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">Registrar Frequência</h1>
 
-        <?php if (!empty($msg)): ?>
-            <div class="mb-4 px-4 py-3 rounded <?php
-                echo $msg['type'] === 'success' ? 'bg-green-100 text-green-700 border border-green-400' : 'bg-yellow-100 text-yellow-700 border border-yellow-400';
-            ?>">
-                <?php echo htmlspecialchars($msg['text']); ?>
+    <header class="w-full bg-blue-900 text-white py-4 px-6 flex justify-between items-center shadow-md fixed top-0 left-0 z-10">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-school text-2xl"></i>
+            <span class="font-bold text-lg">Escolinha do...</span>
+        </div>
+        <div class="flex items-center space-x-4">
+            <?php if (isset($_SESSION['usuario_id'])): ?>
+                <span class="hidden sm:inline">
+                    Olá, <?php echo htmlspecialchars($_SESSION['nome'] ?? $_SESSION['tipo'] ?? 'Usuário'); ?>
+                </span>
+                <form action="logout.php" method="post" class="inline">
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 px-3 py-1 rounded text-white font-medium transition">Sair</button>
+                </form>
+            <?php endif; ?>
+        </div>
+    </header>
+
+    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4" style="padding-top: 88px;">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
+            <div class="text-center mb-8">
+                <h1 class="text-2xl font-bold text-gray-800 mt-4">Registrar Frequência</h1>
+                <p class="text-gray-600">Marque os alunos presentes nesta aula</p>
             </div>
-        <?php endif; ?>
 
-        <?php if (!$aula): ?>
-            <p class="text-red-600">Aula não encontrada ou parâmetro inválido.</p>
-            <a href="lista_aula.php" class="text-blue-600 hover:underline">Voltar para lista de aulas</a>
-        <?php else: ?>
-            <form method="POST">
-                <input type="hidden" name="aula_id" value="<?php echo $aula['id']; ?>" />
-
-                <div class="mb-4">
-                    <label class="block font-medium text-gray-700 mb-1">Turma</label>
-                    <input type="text" disabled value="<?php
-                        // Obter nome da turma
-                        $stmt = $conn->prepare("SELECT nome FROM Turmas WHERE id = ?");
-                        $stmt->execute([$turma_id]);
-                        echo htmlspecialchars($stmt->fetchColumn());
-                    ?>" class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
+            <?php if (!empty($msg)): ?>
+                <div class="mb-4 px-4 py-3 rounded <?php
+                    echo $msg['type'] === 'success' ? 'bg-green-100 text-green-700 border border-green-400' : 'bg-yellow-100 text-yellow-700 border border-yellow-400';
+                ?>">
+                    <?php echo htmlspecialchars($msg['text']); ?>
                 </div>
+            <?php endif; ?>
 
-                <div class="mb-4">
-                    <label class="block font-medium text-gray-700 mb-1">Aula</label>
-                    <input type="text" disabled value="<?php echo htmlspecialchars($aula['tema'] . ' - ' . $aula['data_aula']); ?>"
-                        class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
-                </div>
+            <?php if (!$aula): ?>
+                <p class="text-red-600">Aula não encontrada ou parâmetro inválido.</p>
+                <a href="lista_aulas.php" class="text-blue-600 hover:underline">Voltar para lista de aulas</a>
+            <?php else: ?>
+                <form method="POST">
+                    <input type="hidden" name="aula_id" value="<?php echo $aula['id']; ?>" />
 
-                <div class="mb-6">
-                    <label class="block font-medium text-gray-700 mb-2">Alunos</label>
-                    <?php if (count($alunos) === 0): ?>
-                        <p class="text-gray-600">Nenhum aluno cadastrado nesta turma.</p>
-                    <?php else: ?>
-                        <table class="min-w-full divide-y divide-gray-200 border">
-                            <thead class="bg-gray-100">
-                                <tr>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Aluno</th>
-                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Presente</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($alunos as $aluno): ?>
+                    <div class="mb-4">
+                        <label class="block font-medium text-gray-700 mb-1">Turma</label>
+                        <input type="text" disabled value="<?php
+                            // Obter nome da turma
+                            $stmt = $conn->prepare("SELECT nome FROM Turmas WHERE id = ?");
+                            $stmt->execute([$turma_id]);
+                            echo htmlspecialchars($stmt->fetchColumn());
+                        ?>" class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block font-medium text-gray-700 mb-1">Aula</label>
+                        <input type="text" disabled value="<?php echo htmlspecialchars($aula['tema'] . ' - ' . $aula['data_aula']); ?>"
+                            class="w-full px-3 py-2 border rounded-md bg-gray-100 cursor-not-allowed" />
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block font-medium text-gray-700 mb-2">Alunos</label>
+                        <?php if (count($alunos) === 0): ?>
+                            <p class="text-gray-600">Nenhum aluno cadastrado nesta turma.</p>
+                        <?php else: ?>
+                            <table class="min-w-full divide-y divide-gray-200 border">
+                                <thead class="bg-gray-100">
                                     <tr>
-                                        <td class="px-4 py-2"><?php echo htmlspecialchars($aluno['nome']); ?></td>
-                                        <td class="px-4 py-2 text-center">
-                                            <input type="checkbox" name="presentes[]" value="<?php echo $aluno['id']; ?>" />
-                                        </td>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Aluno</th>
+                                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-700 uppercase">Presente</th>
                                     </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
-                    <?php endif; ?>
-                </div>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($alunos as $aluno): ?>
+                                        <tr>
+                                            <td class="px-4 py-2"><?php echo htmlspecialchars($aluno['nome']); ?></td>
+                                            <td class="px-4 py-2 text-center">
+                                                <input type="checkbox" name="presentes[]" value="<?php echo $aluno['id']; ?>" />
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        <?php endif; ?>
+                    </div>
 
-                <button type="submit"
-                    class="w-full py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-                    Registrar Frequência
-                </button>
-            </form>
-        <?php endif; ?>
+                    <div class="flex justify-end space-x-2">
+                        <a href="lista_aulas.php" class="inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">Cancelar</a>
+                        <button type="submit"
+                            class="inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Registrar Frequência
+                        </button>
+                    </div>
+                </form>
+            <?php endif; ?>
+        </div>
     </div>
-</div>
 </body>
 </html>

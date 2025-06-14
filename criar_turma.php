@@ -74,12 +74,9 @@ session_start();
             <?php
             if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $stmt = $conn->prepare("INSERT INTO Turmas (curso_id, nome, ano) VALUES (?, ?, ?)");
-                if ($stmt->execute([$_POST['curso_id'], $_POST['nome'], $_POST['ano']])) {
-                    echo '<div class="mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Turma criada com sucesso!</div>';
-                    echo '<script>setTimeout(() => { window.location.href = "menu.php"; }, 2000);</script>';
-                } else {
-                    echo '<div class="mt-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">Erro ao criar turma.</div>';
-                }
+                $stmt->execute([$_POST['curso_id'], $_POST['nome'], $_POST['ano']]);
+                echo '<div class="mt-6 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">Turma criada com sucesso!</div>';
+                echo '<script>setTimeout(() => { window.location.href = "menu.php"; }, 2000);</script>';
             }
             ?>
         </div>

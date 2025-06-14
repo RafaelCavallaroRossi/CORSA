@@ -20,4 +20,3 @@ if (isset($_GET['Aula_id'])) {
         echo json_encode([]);
     }
 }
-?>

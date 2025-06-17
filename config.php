@@ -2,7 +2,7 @@
 $host = 'localhost';
 $db = 'InstituicaoVestibular';
 $user = 'root';
-$pass = 'luisfelipe'; // ou a senha que você configurou
+$pass = '';
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
@@ -10,4 +10,3 @@ try {
 } catch (PDOException $e) {
     echo "Connection failed: " . $e->getMessage();
 }
-?>

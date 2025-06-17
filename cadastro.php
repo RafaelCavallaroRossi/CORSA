@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Cadastro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="estilos.css">
+    <link rel="stylesheet" href="estilo.css">
     <script>
         function toggleSenha() {
             var tipo = document.getElementById('tipo').value;

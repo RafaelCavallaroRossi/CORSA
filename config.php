@@ -2,7 +2,7 @@
 $host = 'localhost';
 $db = 'InstituicaoVestibular';
 $user = 'root';
-$pass = ''; // ou a senha que você configurou
+$pass = 'luisfelipe'; // ou a senha que você configurou
 
 try {
     $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);

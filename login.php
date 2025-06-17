@@ -1,20 +1,15 @@
 <?php 
 session_start();
 include 'config.php';
-
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
-
     $stmt = $conn->prepare("SELECT * FROM Usuarios WHERE email = ? LIMIT 1");
     $stmt->execute([$email]);
     $usuario = $stmt->fetch();
-
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['tipo'] = $usuario['tipo'];
-        
-        // Redirecionar para o painel apropriado
         if ($usuario['tipo'] == 'Secretaria') {
             header("Location: menu.php");
             exit;
@@ -33,18 +28,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #1e3a8a 0%, #065f46 100%);
-        }
-    </style>
+    <link rel="stylesheet" href="estilos.css">
 </head>
 <body class="bg-gray-50 font-sans">
-    <div class="min-h-screen flex items-center justify-center gradient-bg p-4">
+    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md">
             <div class="text-center mb-8">
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Acesso ao Sistema</h1>

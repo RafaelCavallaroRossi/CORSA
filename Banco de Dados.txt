@@ -189,12 +189,36 @@ INSERT INTO Alunos (nome, email, matricula, cpf, rg, data_nascimento, telefone) 
 ('Ricardo Pinto', 'ricardo.pinto@example.com', 'ALU018', '12345678921', 'RG1234587', '2005-08-20', '11987654341');
 
 INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES
-(1, 1),  -- Alice na Turma A
-(1, 2),  -- Bruno na Turma A
-(1, 3);  -- Carla na Turma A
+(1, 1), 
+(1, 2), 
+(1, 3),
+(1, 4),
+(1, 5),
+(1, 6),
+(1, 7),
+(1, 8),
+(1, 9),
+(1, 10),
+(1, 11),
+(1, 12),
+(1, 13),
+(1, 14),
+(1, 15),
+(1, 16),
+(1, 17),
+(1, 18);
+
 
 INSERT INTO Aulas (turma_id, data_aula, tema, conteudo) VALUES
 (1, '2023-09-01', 'Introdução à Matemática I', 'Conteúdo da aula 1'),
-(1, '2023-09-08', 'Continuação Matemática I', 'Conteúdo da aula 2');
+(1, '2023-09-08', 'Continuação Matemática I', 'Conteúdo da aula 2'),
+(1, '2023-09-15', 'Equações do 1º Grau', 'Conceitos e resolução de equações simples.'),
+(1, '2023-09-22', 'Equações do 2º Grau', 'Fórmula de Bhaskara e suas aplicações.'),
+(1, '2023-09-29', 'Sistema de Equações', 'Método da substituição e adição.'),
+(1, '2023-10-06', 'Funções', 'Introdução às funções matemáticas.'),
+(1, '2023-10-13', 'Função Afim', 'Gráficos e análise de variações.'),
+(1, '2023-10-20', 'Função Quadrática', 'Raízes e concavidade.'),
+(1, '2023-10-27', 'Progressões Aritméticas', 'Termo geral e soma dos termos.'),
+(1, '2023-11-03', 'Progressões Geométricas', 'Razão, termo geral e soma.');
 
 COMMIT;

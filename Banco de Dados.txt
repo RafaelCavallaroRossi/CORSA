@@ -18,7 +18,7 @@ SET NAMES utf8mb4;
 CREATE TABLE Usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE, -- UNIQUE para evitar duplicidade
+    email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
     tipo ENUM('Secretaria', 'Professor') NOT NULL,
     matricula VARCHAR(20) NOT NULL UNIQUE,
@@ -39,6 +39,8 @@ CREATE TABLE Alunos (
     rg VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE,
     telefone VARCHAR(15),
+    historico_pdf VARCHAR(255),
+    documento_pdf VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -159,7 +161,6 @@ INSERT INTO Usuarios (nome, email, senha, matricula, cpf, rg, data_nascimento, t
 INSERT INTO Turmas (curso_id, nome, ano) VALUES
 (1, 'Turma A', 2023);
 
-
 INSERT INTO Professores_Turmas (turma_id, docente_id) VALUES
 (1, 2);  -- Professor 1 na Turma A
 
@@ -167,12 +168,25 @@ INSERT INTO Disciplinas_Turmas (turma_id, disciplina_id) VALUES
 (1, 1),  -- Disciplina 1 na Turma A
 (1, 2);  -- Disciplina 2 na Turma A
 
-
 INSERT INTO Alunos (nome, email, matricula, cpf, rg, data_nascimento, telefone) VALUES
 ('Alice Silva', 'alice.silva@example.com', 'ALU001', '12345678904', 'RG1234570', '2000-03-03', '11987654324'),
 ('Bruno Oliveira', 'bruno.oliveira@example.com', 'ALU002', '12345678905', 'RG1234571', '2001-04-04', '11987654325'),
-('Carla Pereira', 'carla.pereira@example.com', 'ALU003', '12345678906', 'RG1234572', '2002-05-05', '11987654326');
-
+('Carla Pereira', 'carla.pereira@example.com', 'ALU003', '12345678906', 'RG1234572', '2002-05-05', '11987654326'),
+('Daniel Costa', 'daniel.costa@example.com', 'ALU004', '12345678907', 'RG1234573', '2003-06-06', '11987654327'),
+('Eduarda Lima', 'eduarda.lima@example.com', 'ALU005', '12345678908', 'RG1234574', '2004-07-07', '11987654328'),
+('Felipe Souza', 'felipe.souza@example.com', 'ALU006', '12345678909', 'RG1234575', '2005-08-08', '11987654329'),
+('Gabriela Rocha', 'gabriela.rocha@example.com', 'ALU007', '12345678910', 'RG1234576', '2000-09-09', '11987654330'),
+('Henrique Lima', 'henrique.lima@example.com', 'ALU008', '12345678911', 'RG1234577', '2001-10-10', '11987654331'),
+('Isabela Martins', 'isabela.martins@example.com', 'ALU009', '12345678912', 'RG1234578', '2002-11-11', '11987654332'),
+('João Henrique', 'joao.henrique@example.com', 'ALU010', '12345678913', 'RG1234579', '2003-12-12', '11987654333'),
+('Katia Fernandes', 'katia.fernandes@example.com', 'ALU011', '12345678914', 'RG1234580', '2004-01-13', '11987654334'),
+('Lucas Teixeira', 'lucas.teixeira@example.com', 'ALU012', '12345678915', 'RG1234581', '2005-02-14', '11987654335'),
+('Mariana Gomes', 'mariana.gomes@example.com', 'ALU013', '12345678916', 'RG1234582', '2000-03-15', '11987654336'),
+('Nicolas Ribeiro', 'nicolas.ribeiro@example.com', 'ALU014', '12345678917', 'RG1234583', '2001-04-16', '11987654337'),
+('Olivia Nunes', 'olivia.nunes@example.com', 'ALU015', '12345678918', 'RG1234584', '2002-05-17', '11987654338'),
+('Paulo César', 'paulo.cesar@example.com', 'ALU016', '12345678919', 'RG1234585', '2003-06-18', '11987654339'),
+('Quésia Moreira', 'quesia.moreira@example.com', 'ALU017', '12345678920', 'RG1234586', '2004-07-19', '11987654340'),
+('Ricardo Pinto', 'ricardo.pinto@example.com', 'ALU018', '12345678921', 'RG1234587', '2005-08-20', '11987654341');
 
 INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES
 (1, 1),  -- Alice na Turma A

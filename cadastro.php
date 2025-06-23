@@ -20,9 +20,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $sql = "INSERT INTO $tabela ($campos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     } else if ($tipo === 'Aluno') {
         $tabela = 'Alunos';
-        $campos = "nome, email, matricula, cpf, rg, data_nascimento, telefone";
-        $valores = [$nome, $email, $matricula, $cpf, $rg, $data_nascimento, $telefone];
-        $sql = "INSERT INTO $tabela ($campos) VALUES (?, ?, ?, ?, ?, ?, ?)";
+       $historico_nome = '';
+        $documento_nome = '';
+        if (isset($_FILES['historico']) && $_FILES['historico']['error'] === UPLOAD_ERR_OK) {
+            $extensao = pathinfo($_FILES['historico']['name'], PATHINFO_EXTENSION);
+            if (strtolower($extensao) === 'pdf') {
+                $historico_nome = uniqid('historico_') . '.pdf';
+                move_uploaded_file($_FILES['historico']['tmp_name'], 'uploads/' . $historico_nome);
+            } else {
+                $mensagem = "O arquivo de histórico deve ser um PDF.";
+                $mensagem_tipo = "erro";
+            }
+        }
+        if (isset($_FILES['documento']) && $_FILES['documento']['error'] === UPLOAD_ERR_OK) {
+            $extensao = pathinfo($_FILES['documento']['name'], PATHINFO_EXTENSION);
+            if (strtolower($extensao) === 'pdf') {
+                $documento_nome = uniqid('documento_') . '.pdf';
+                move_uploaded_file($_FILES['documento']['tmp_name'], 'uploads/' . $documento_nome);
+            } else {
+                $mensagem = "O arquivo de documento deve ser um PDF.";
+                $mensagem_tipo = "erro";
+            }
+        }
+        if (empty($mensagem)) {
+            $campos = "nome, email, matricula, cpf, rg, data_nascimento, telefone, historico_pdf, documento_pdf";
+            $valores = [$nome, $email, $matricula, $cpf, $rg, $data_nascimento, $telefone, $historico_nome, $documento_nome];
+            $sql = "INSERT INTO $tabela ($campos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        }
+
     } else {
         $mensagem = "Tipo de cadastro inválido.";
         $mensagem_tipo = "erro";
@@ -48,18 +73,29 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
-    <script>
-        function toggleSenha() {
-            var tipo = document.getElementById('tipo').value;
-            var senhaDiv = document.getElementById('senha-div');
-            if (tipo === 'Secretaria' || tipo === 'Professor') {
-                senhaDiv.style.display = 'block';
-            } else {
-                senhaDiv.style.display = 'none';
-            }
+   <script>
+    function toggleSenha() {
+        var tipo = document.getElementById('tipo').value;
+        var senhaDiv = document.getElementById('senha-div');
+        var uploadsAluno = document.getElementById('uploads-aluno');
+
+        if (tipo === 'Secretaria' || tipo === 'Professor') {
+            senhaDiv.style.display = 'block';
+            uploadsAluno.style.display = 'none';
+        } else if (tipo === 'Aluno') {
+            senhaDiv.style.display = 'none';
+            uploadsAluno.style.display = 'block';
+        } else {
+            senhaDiv.style.display = 'none';
+            uploadsAluno.style.display = 'none';
         }
-        window.onload = toggleSenha;
+    }
+    window.onload = toggleSenha;
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("tipo").addEventListener("change", toggleSenha);
+    });
     </script>
+
 </head>
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
@@ -81,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </script>
                 <?php endif; ?>
             <?php endif; ?>
-            <form id="cadastro-form" class="space-y-6" method="POST" autocomplete="off">
+           <form id="cadastro-form" class="space-y-6" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <div class="mb-4">
                     <label for="tipo" class="block text-sm font-medium text-gray-700">Tipo de Cadastro</label>
                     <select id="tipo" name="tipo" required onchange="toggleSenha()" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
@@ -122,6 +158,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div id="senha-div">
                         <label for="senha" class="block text-sm font-medium text-gray-700">Senha</label>
                         <input type="password" id="senha" name="senha" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div id="uploads-aluno" style="display: none;" class="col-span-2 space-y-4">
+                    <div>
+                        <label for="historico" class="block text-sm font-medium text-gray-700">Histórico de Matrícula (PDF)</label>
+                        <input type="file" id="historico" name="historico" accept="application/pdf"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="documento" class="block text-sm font-medium text-gray-700">Documento (PDF)</label>
+                        <input type="file" id="documento" name="documento" accept="application/pdf"class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 text-sm text-gray-700 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                     </div>
                 </div>
                 <div class="flex flex-col sm:flex-row justify-end sm:space-x-2 space-y-2 sm:space-y-0">

@@ -62,6 +62,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $mensagem_tipo = "erro";
         }
     }
+    $aluno_id = $conn->lastInsertId();
+    if ($historico_nome) {
+        $stmt = $conn->prepare("INSERT INTO Documentos (aluno_id, tipo, arquivo) VALUES (?, 'historico', ?)");
+        $stmt->execute([$aluno_id, $historico_nome]);
+    }
+    if ($documento_nome) {
+        $stmt = $conn->prepare("INSERT INTO Documentos (aluno_id, tipo, arquivo) VALUES (?, 'documento', ?)");
+        $stmt->execute([$aluno_id, $documento_nome]);
+    }
 }
 ?>
 <!DOCTYPE html>

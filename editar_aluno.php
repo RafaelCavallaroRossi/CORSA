@@ -1,6 +1,7 @@
 <?php
 include 'config.php';
 session_start();
+
 $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 if ($id <= 0) {
     header("Location: visualizar_alunos.php");
@@ -9,9 +10,19 @@ if ($id <= 0) {
 $stmt = $conn->prepare("SELECT * FROM Alunos WHERE id = ?");
 $stmt->execute([$id]);
 $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
+
 if (!$aluno) {
     header("Location: visualizar_alunos.php");
     exit;
+}
+$stmt = $conn->prepare("SELECT * FROM Documentos WHERE aluno_id = ?");
+$stmt->execute([$id]);
+$documentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$historico = '';
+$documento = '';
+foreach ($documentos as $doc) {
+    if ($doc['tipo'] === 'historico') $historico = $doc['arquivo'];
+    if ($doc['tipo'] === 'documento') $documento = $doc['arquivo'];
 }
 $mensagem = '';
 $mensagem_tipo = '';
@@ -23,30 +34,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rg = $_POST['rg'];
     $data_nascimento = $_POST['data_nascimento'];
     $telefone = $_POST['telefone'];
+    $sql = "UPDATE Alunos SET nome = ?, email = ?, matricula = ?, cpf = ?, rg = ?, data_nascimento = ?, telefone = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->execute([$nome, $email, $matricula, $cpf, $rg, $data_nascimento, $telefone, $id]);
     $uploadDir = "uploads/";
-    $historico_nome = $aluno['historico_pdf'];
-    $documento_nome = $aluno['documento_pdf'];
     if (!empty($_FILES['historico_pdf']['name'])) {
-        if ($historico_nome && file_exists($uploadDir . $historico_nome)) unlink($uploadDir . $historico_nome);
-        $historico_nome = 'historico_' . uniqid() . '.pdf';
-        move_uploaded_file($_FILES['historico_pdf']['tmp_name'], $uploadDir . $historico_nome);
+        $novo_nome = 'historico_' . uniqid() . '.pdf';
+        move_uploaded_file($_FILES['historico_pdf']['tmp_name'], $uploadDir . $novo_nome);
+        $stmt = $conn->prepare("SELECT id FROM Documentos WHERE aluno_id = ? AND tipo = 'historico'");
+        $stmt->execute([$id]);
+        if ($docId = $stmt->fetchColumn()) {
+            $stmt = $conn->prepare("UPDATE Documentos SET arquivo = ? WHERE id = ?");
+            $stmt->execute([$novo_nome, $docId]);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO Documentos (aluno_id, tipo, arquivo) VALUES (?, 'historico', ?)");
+            $stmt->execute([$id, $novo_nome]);
+        }
     }
     if (!empty($_FILES['documento_pdf']['name'])) {
-        if ($documento_nome && file_exists($uploadDir . $documento_nome)) unlink($uploadDir . $documento_nome);
-        $documento_nome = 'documento_' . uniqid() . '.pdf';
-        move_uploaded_file($_FILES['documento_pdf']['tmp_name'], $uploadDir . $documento_nome);
-    }
-    $sql = "UPDATE Alunos SET nome = ?, email = ?, matricula = ?, cpf = ?, rg = ?, data_nascimento = ?, telefone = ?, historico_pdf = ?, documento_pdf = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt->execute([$nome, $email, $matricula, $cpf, $rg, $data_nascimento, $telefone, $historico_nome, $documento_nome, $id])) {
-        $mensagem = "Dados atualizados com sucesso!";
-        $mensagem_tipo = "sucesso";
-        $stmt = $conn->prepare("SELECT * FROM Alunos WHERE id = ?");
+        $novo_nome = 'documento_' . uniqid() . '.pdf';
+        move_uploaded_file($_FILES['documento_pdf']['tmp_name'], $uploadDir . $novo_nome);
+        $stmt = $conn->prepare("SELECT id FROM Documentos WHERE aluno_id = ? AND tipo = 'documento'");
         $stmt->execute([$id]);
-        $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
-    } else {
-        $mensagem = "Erro ao atualizar dados: " . $stmt->errorInfo()[2];
-        $mensagem_tipo = "erro";
+        if ($docId = $stmt->fetchColumn()) {
+            $stmt = $conn->prepare("UPDATE Documentos SET arquivo = ? WHERE id = ?");
+            $stmt->execute([$novo_nome, $docId]);
+        } else {
+            $stmt = $conn->prepare("INSERT INTO Documentos (aluno_id, tipo, arquivo) VALUES (?, 'documento', ?)");
+            $stmt->execute([$id, $novo_nome]);
+        }
+    }
+    $mensagem = "Dados atualizados com sucesso!";
+    $mensagem_tipo = "sucesso";
+    $stmt = $conn->prepare("SELECT * FROM Alunos WHERE id = ?");
+    $stmt->execute([$id]);
+    $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $conn->prepare("SELECT * FROM Documentos WHERE aluno_id = ?");
+    $stmt->execute([$id]);
+    $documentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $historico = '';
+    $documento = '';
+    foreach ($documentos as $doc) {
+        if ($doc['tipo'] === 'historico') $historico = $doc['arquivo'];
+        if ($doc['tipo'] === 'documento') $documento = $doc['arquivo'];
     }
 }
 ?>
@@ -72,6 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
             <?php endif; ?>
+
             <form method="POST" enctype="multipart/form-data" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
@@ -103,24 +134,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <input type="text" name="telefone" value="<?= htmlspecialchars($aluno['telefone']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
                     </div>
                 </div>
+
                 <div>
                     <label for="historico_pdf" class="block text-sm font-medium text-gray-700">Histórico Escolar (PDF)</label>
-                    <?php if ($aluno['historico_pdf']): ?>
+                    <?php if ($historico): ?>
                         <p class="text-sm mt-1 mb-2 text-blue-600">
-                            <a href="uploads/<?= htmlspecialchars($aluno['historico_pdf']) ?>" target="_blank">Ver atual</a>
+                            <a href="uploads/<?= htmlspecialchars($historico) ?>" target="_blank">Ver atual</a>
                         </p>
                     <?php endif; ?>
                     <input type="file" name="historico_pdf" accept="application/pdf" class="block w-full text-sm">
                 </div>
+
                 <div>
                     <label for="documento_pdf" class="block text-sm font-medium text-gray-700">Documento (PDF)</label>
-                    <?php if ($aluno['documento_pdf']): ?>
+                    <?php if ($documento): ?>
                         <p class="text-sm mt-1 mb-2 text-blue-600">
-                            <a href="uploads/<?= htmlspecialchars($aluno['documento_pdf']) ?>" target="_blank">Ver atual</a>
+                            <a href="uploads/<?= htmlspecialchars($documento) ?>" target="_blank">Ver atual</a>
                         </p>
                     <?php endif; ?>
                     <input type="file" name="documento_pdf" accept="application/pdf" class="block w-full text-sm">
                 </div>
+
                 <div class="flex justify-end space-x-2">
                     <a href="visualizar_alunos.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar Alterações</button>

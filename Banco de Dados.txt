@@ -39,8 +39,6 @@ CREATE TABLE Alunos (
     rg VARCHAR(20) NOT NULL UNIQUE,
     data_nascimento DATE,
     telefone VARCHAR(15),
-    historico_pdf VARCHAR(255),
-    documento_pdf VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -67,7 +65,7 @@ CREATE TABLE Disciplinas (
 
 CREATE TABLE Turmas (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    curso_id INT,
+    curso_id INT NULL,
     nome VARCHAR(100) NOT NULL,
     ano INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -147,6 +145,33 @@ CREATE TABLE Frequencia (
         ON UPDATE CASCADE
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+CREATE TABLE Documentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    tipo ENUM('historico', 'documento') NOT NULL,
+    arquivo VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE Notas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    aluno_id INT NOT NULL,
+    disciplina_id INT NOT NULL,
+    nota DECIMAL(5,2) NOT NULL,
+    data_lancamento DATE DEFAULT CURRENT_DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (aluno_id) REFERENCES Alunos(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE,
+    FOREIGN KEY (disciplina_id) REFERENCES Disciplinas(id)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 INSERT INTO Cursos (nome, descricao) VALUES
 ('Curso de Matemática', 'Curso de Matemática Básica e Avançada');
 
@@ -208,6 +233,7 @@ INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES
 (1, 17),
 (1, 18);
 
+
 INSERT INTO Aulas (turma_id, data_aula, tema, conteudo) VALUES
 (1, '2023-09-01', 'Introdução à Matemática I', 'Conteúdo da aula 1'),
 (1, '2023-09-08', 'Continuação Matemática I', 'Conteúdo da aula 2'),
@@ -219,5 +245,10 @@ INSERT INTO Aulas (turma_id, data_aula, tema, conteudo) VALUES
 (1, '2023-10-20', 'Função Quadrática', 'Raízes e concavidade.'),
 (1, '2023-10-27', 'Progressões Aritméticas', 'Termo geral e soma dos termos.'),
 (1, '2023-11-03', 'Progressões Geométricas', 'Razão, termo geral e soma.');
+
+CREATE INDEX idx_aluno_id ON Alunos_Turmas(aluno_id);
+CREATE INDEX idx_turma_id ON Alunos_Turmas(turma_id);
+CREATE INDEX idx_docente_id ON Professores_Turmas(docente_id);
+CREATE INDEX idx_disciplina_id ON Disciplinas_Turmas(disciplina_id);
 
 COMMIT;

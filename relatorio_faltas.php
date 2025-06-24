@@ -1,9 +1,11 @@
 <?php
 include 'config.php';
 session_start();
-
+if (!isset($_SESSION['usuario_id']) || $_SESSION['tipo'] !== 'Secretaria') {
+    header("Location: login.php");
+    exit;
+}
 $todas_turmas = $conn->query("SELECT id, nome FROM Turmas ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
-
 $filtro_turma = isset($_GET['turma_id']) ? intval($_GET['turma_id']) : 0;
 $relatorio = [];
 
@@ -13,8 +15,8 @@ if ($filtro_turma > 0) {
     $total_aulas = (int) $stmt->fetchColumn();
     $sql = "
         SELECT a.id AS aluno_id, a.nome,
-            SUM(CASE WHEN f.status = 'Ausente' THEN 1 ELSE 0 END) AS faltas,
-            SUM(CASE WHEN f.status = 'Presente' THEN 1 ELSE 0 END) AS presencas
+            COALESCE(SUM(CASE WHEN f.status = 'Ausente' THEN 1 ELSE 0 END), 0) AS faltas,
+            COALESCE(SUM(CASE WHEN f.status = 'Presente' THEN 1 ELSE 0 END), 0) AS presencas
         FROM Alunos a
         JOIN Alunos_Turmas atur ON atur.aluno_id = a.id
         LEFT JOIN Frequencia f ON f.aluno_id = a.id
@@ -26,6 +28,16 @@ if ($filtro_turma > 0) {
     $stmt = $conn->prepare($sql);
     $stmt->execute([$filtro_turma, $filtro_turma]);
     $relatorio = $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+$nome_turma = '';
+if ($filtro_turma > 0) {
+    foreach ($todas_turmas as $turma) {
+        if ($turma['id'] == $filtro_turma) {
+            $nome_turma = $turma['nome'];
+            break;
+        }
+    }
 }
 ?>
 <!DOCTYPE html>
@@ -56,6 +68,7 @@ if ($filtro_turma > 0) {
             </form>
 
             <?php if ($filtro_turma && $relatorio): ?>
+                <h2 class="text-lg font-semibold text-center mb-4">Turma: <?= htmlspecialchars($nome_turma) ?></h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-100">

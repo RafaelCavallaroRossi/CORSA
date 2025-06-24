@@ -7,26 +7,21 @@ $mensagem_tipo = '';
 
 if (isset($_GET['excluir'])) {
     $id = intval($_GET['excluir']);
-
-    $stmt = $conn->prepare("SELECT historico_pdf, documento_pdf FROM Alunos WHERE id = ?");
+    $stmt = $conn->prepare("SELECT arquivo FROM Documentos WHERE aluno_id = ?");
     $stmt->execute([$id]);
-    $aluno = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    if ($aluno) {
-        $delete = $conn->prepare("DELETE FROM Alunos WHERE id = ?");
-        if ($delete->execute([$id])) {
-            if (!empty($aluno['historico_pdf']) && file_exists("uploads/" . $aluno['historico_pdf'])) {
-                unlink("uploads/" . $aluno['historico_pdf']);
+    $docs = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $delete = $conn->prepare("DELETE FROM Alunos WHERE id = ?");
+    if ($delete->execute([$id])) {
+        foreach ($docs as $doc) {
+            if (!empty($doc['arquivo']) && file_exists("uploads/" . $doc['arquivo'])) {
+                unlink("uploads/" . $doc['arquivo']);
             }
-            if (!empty($aluno['documento_pdf']) && file_exists("uploads/" . $aluno['documento_pdf'])) {
-                unlink("uploads/" . $aluno['documento_pdf']);
-            }
-            $mensagem = "Aluno excluído com sucesso.";
-            $mensagem_tipo = "sucesso";
-        } else {
-            $mensagem = "Erro ao excluir aluno.";
-            $mensagem_tipo = "erro";
         }
+        $mensagem = "Aluno excluído com sucesso.";
+        $mensagem_tipo = "sucesso";
+    } else {
+        $mensagem = "Erro ao excluir aluno.";
+        $mensagem_tipo = "erro";
     }
 }
 
@@ -88,23 +83,31 @@ $alunos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <?php foreach ($alunos as $aluno): ?>
+                        <?php foreach ($alunos as $aluno):
+                            $stmtDoc = $conn->prepare("SELECT tipo, arquivo FROM Documentos WHERE aluno_id = ?");
+                            $stmtDoc->execute([$aluno['id']]);
+                            $docs = $stmtDoc->fetchAll(PDO::FETCH_ASSOC);
+                            $historico = '';
+                            $documento = '';
+                            foreach ($docs as $doc) {
+                                if ($doc['tipo'] === 'historico') $historico = $doc['arquivo'];
+                                if ($doc['tipo'] === 'documento') $documento = $doc['arquivo'];
+                            }
+                        ?>
                             <tr>
                                 <td class="px-4 py-2"><?= htmlspecialchars($aluno['nome']) ?></td>
                                 <td class="px-4 py-2"><?= htmlspecialchars($aluno['email']) ?></td>
                                 <td class="px-4 py-2"><?= htmlspecialchars($aluno['matricula']) ?></td>
                                 <td class="px-4 py-2 text-center">
-                                    <?php if ($aluno['historico_pdf']): ?>
-                                        <a href="<?= 'uploads/' . htmlspecialchars($aluno['historico_pdf']) ?>" target="_blank"
-                                           class="text-blue-600 hover:underline">Ver PDF</a>
+                                    <?php if ($historico): ?>
+                                        <a href="<?= 'uploads/' . htmlspecialchars($historico) ?>" target="_blank" class="text-blue-600 hover:underline">Ver PDF</a>
                                     <?php else: ?>
                                         <span class="text-gray-400">---</span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="px-4 py-2 text-center">
-                                    <?php if ($aluno['documento_pdf']): ?>
-                                        <a href="<?= 'uploads/' . htmlspecialchars($aluno['documento_pdf']) ?>" target="_blank"
-                                           class="text-blue-600 hover:underline">Ver PDF</a>
+                                    <?php if ($documento): ?>
+                                        <a href="<?= 'uploads/' . htmlspecialchars($documento) ?>" target="_blank" class="text-blue-600 hover:underline">Ver PDF</a>
                                     <?php else: ?>
                                         <span class="text-gray-400">---</span>
                                     <?php endif; ?>

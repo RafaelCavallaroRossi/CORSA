@@ -86,7 +86,7 @@
                         : "<i class='fas fa-times text-red-600'></i>";
 
                     echo "<tr>
-                        <td class='px-4 py-2 whitespace-nowrap'>{$aula['data_aula']}</td>
+                        <td class='px-4 py-2 whitespace-nowrap'>" . date('d/m/Y', strtotime($aula['data_aula'])) . "</td>
                         <td class='px-4 py-2'>{$aula['tema']}</td>
                         <td class='px-4 py-2'>{$aula['conteudo']}</td>
                         <td class='px-4 py-2 text-center'>$statusIcon</td>

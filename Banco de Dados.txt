@@ -162,11 +162,11 @@ INSERT INTO Turmas (curso_id, nome, ano) VALUES
 (1, 'Turma A', 2023);
 
 INSERT INTO Professores_Turmas (turma_id, docente_id) VALUES
-(1, 2);  -- Professor 1 na Turma A
+(1, 2);
 
 INSERT INTO Disciplinas_Turmas (turma_id, disciplina_id) VALUES
-(1, 1),  -- Disciplina 1 na Turma A
-(1, 2);  -- Disciplina 2 na Turma A
+(1, 1),
+(1, 2);
 
 INSERT INTO Alunos (nome, email, matricula, cpf, rg, data_nascimento, telefone) VALUES
 ('Alice Silva', 'alice.silva@example.com', 'ALU001', '12345678904', 'RG1234570', '2000-03-03', '11987654324'),
@@ -207,7 +207,6 @@ INSERT INTO Alunos_Turmas (turma_id, aluno_id) VALUES
 (1, 16),
 (1, 17),
 (1, 18);
-
 
 INSERT INTO Aulas (turma_id, data_aula, tema, conteudo) VALUES
 (1, '2023-09-01', 'Introdução à Matemática I', 'Conteúdo da aula 1'),

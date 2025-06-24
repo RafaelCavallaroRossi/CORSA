@@ -35,7 +35,7 @@ Considerando que a escola oferece cursos gratuitos e cumpre um papel social rele
 
 ### :technologist: Desenvolvido por
 
-*Grupo Block-Brain* 🚀
+*Grupo Block-Brain* 🧠
 ### Licença
 
 Este projeto está sob a **Licença FATEC**. Mais informações disponíveis em: (https://fatecitapira.cps.sp.gov.br/)

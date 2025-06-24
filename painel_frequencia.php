@@ -24,7 +24,13 @@
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                         <option value="">Selecione uma Aula</option>
                         <?php
-                        $stmt = $conn->query("SELECT * FROM Aulas");
+                        $stmt = $conn->query("
+                            SELECT DISTINCT Aulas.id, Aulas.tema, Aulas.data_aula
+                            FROM Aulas
+                            INNER JOIN Frequencia ON Aulas.id = Frequencia.aula_id
+                            ORDER BY Aulas.data_aula DESC
+                        ");
+
                         while ($row = $stmt->fetch()) {
                             echo "<option value='{$row['id']}'>{$row['tema']} - {$row['data_aula']}</option>";
                         }
@@ -40,14 +46,23 @@
                 </div>
             </form>
             <?php
-            if ($_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET['aula_id'])) {
-                $aula_id = $_GET['aula_id'];
+            if (isset($_POST['atualizar'])) {
+                $aula_id = $_POST['aula_id'];
+                foreach ($_POST['status'] as $aluno_id => $novo_status) {
+                    $stmt = $conn->prepare("UPDATE Frequencia SET status = ? WHERE aula_id = ? AND aluno_id = ?");
+                    $stmt->execute([$novo_status, $aula_id, $aluno_id]);
+                }
+                echo "<div class='text-green-600 font-semibold mb-4 text-center'>Frequência atualizada com sucesso!</div>";
+            }
+
+            if ((isset($_GET['aula_id']) && $_GET['aula_id']) || isset($_POST['aula_id'])) {
+                $aula_id = $_GET['aula_id'] ?? $_POST['aula_id'];
                 $stmt = $conn->prepare("SELECT turma_id FROM Aulas WHERE id = ?");
                 $stmt->execute([$aula_id]);
                 $turma_id = $stmt->fetchColumn();
                 if ($turma_id) {
                     $stmt = $conn->prepare("
-                        SELECT Alunos.nome AS aluno, Frequencia.status 
+                        SELECT Alunos.id AS aluno_id, Alunos.nome AS aluno, Frequencia.status 
                         FROM Frequencia 
                         JOIN Alunos ON Frequencia.aluno_id = Alunos.id 
                         JOIN Alunos_Turmas ON Alunos.id = Alunos_Turmas.aluno_id 
@@ -56,6 +71,8 @@
                     $stmt->execute([$aula_id, $turma_id]);
                     $frequencias = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     if ($frequencias) {
+                        echo "<form method='POST'>";
+                        echo "<input type='hidden' name='aula_id' value='$aula_id'>";
                         echo "<div class='overflow-x-auto'><table class='min-w-full divide-y divide-gray-200 border'>
                                 <thead class='bg-gray-100'>
                                     <tr>
@@ -67,15 +84,22 @@
                         foreach ($frequencias as $row) {
                             echo "<tr>
                                     <td class='px-4 py-2'>{$row['aluno']}</td>
-                                    <td class='px-4 py-2'>{$row['status']}</td>
-                                  </tr>";
+                                    <td class='px-4 py-2'>
+                                        <select name='status[{$row['aluno_id']}]' class='border border-gray-300 rounded px-2 py-1'>
+                                            <option value='Presente'" . ($row['status'] === 'Presente' ? " selected" : "") . ">Presente</option>
+                                            <option value='Ausente'" . ($row['status'] === 'Ausente' ? " selected" : "") . ">Ausente</option>
+                                        </select>
+                                    </td>
+                                </tr>";
                         }
-                        echo "</tbody></table></div>";
+                        echo "</tbody></table></div>
+                            <div class='mt-4 text-right'>
+                                <button type='submit' name='atualizar' class='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700'>Salvar Alterações</button>
+                            </div>
+                            </form>";
                     } else {
                         echo "<div class='mt-4 text-center text-gray-600'>Nenhuma frequência registrada para esta aula.</div>";
                     }
-                } else {
-                    echo "<div class='mt-4 text-center text-gray-600'>Aula não encontrada.</div>";
                 }
             }
             ?>

@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['tipo'] = $usuario['tipo'];
+        $_SESSION['nome'] = $usuario['nome'];
         if ($usuario['tipo'] == 'Secretaria') {
             header("Location: menu.php");
             exit;

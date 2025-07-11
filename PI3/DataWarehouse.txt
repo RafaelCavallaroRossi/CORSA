@@ -1,0 +1,20 @@
+🔹 2. O que é uma Data Warehouse?
+Uma Data Warehouse (ou Armazém de Dados) é um sistema voltado para armazenamento histórico, análise e geração de relatórios com dados consolidados e integrados de várias fontes.
+
+Características principais:
+
+Orientado a assunto: Organiza dados por temas (ex: clima, poluição, qualidade da água).
+
+Integrado: Dados vindos de várias fontes são padronizados.
+
+Histórico: Mantém dados ao longo do tempo para análises temporais.
+
+Não volátil: Os dados não são alterados com frequência, apenas consultados.
+
+Uso em Monitoramento Ambiental:
+
+Consolidar leituras de sensores de diferentes tipos (temperatura, umidade, CO2).
+
+Analisar evolução da qualidade do ar em determinadas regiões.
+
+Relatórios de tendência climática.

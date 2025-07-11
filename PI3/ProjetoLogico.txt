@@ -1,0 +1,14 @@
+🔹 1. O que é um Projeto Lógico NoSQL?
+Um Projeto Lógico NoSQL representa a estrutura organizacional de um banco de dados NoSQL (não relacional), descrevendo como os dados serão armazenados, acessados e relacionados, sem ainda entrar nos detalhes físicos (como índices ou performance).
+
+Características principais:
+
+Sem modelo relacional fixo: Não utiliza tabelas com chaves primárias e estrangeiras, como no modelo relacional.
+
+Foco em documentos, colunas, grafos ou chave-valor, dependendo do tipo de NoSQL (MongoDB é do tipo document-oriented).
+
+Modelagem baseada em uso: O design do banco é influenciado pelas consultas que serão feitas.
+
+Desnormalização: Dados redundantes são permitidos para melhorar o desempenho.
+
+Documentação via JSON/BSON: Estruturas são definidas por documentos aninhados.

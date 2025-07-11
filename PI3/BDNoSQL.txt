@@ -1,0 +1,18 @@
+{
+  "_id": "sensor_01",
+  "tipo": "CO2",
+  "localizacao": {
+    "estado": "SP",
+    "cidade": "Campinas"
+  },
+  "leituras": [
+    {
+      "timestamp": "2025-07-11T10:00:00",
+      "valor": 412
+    },
+    {
+      "timestamp": "2025-07-11T11:00:00",
+      "valor": 420
+    }
+  ]
+}

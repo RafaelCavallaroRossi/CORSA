@@ -1,5 +1,5 @@
 # CORSA
-Central de Organizações e Registros Sistêmicos Acadêmicos
+Câmeras Operacionais de Registro e Segurança Automobilística
 # Sistema de Cadastro e Marcação de Presença Escolar
 
 Este projeto é um sistema web desenvolvido em PHP para cadastro de usuários (alunos, professores, coordenadores e administradores) e marcação de presença em uma escola. O sistema permite o gerenciamento de justificativas de faltas, planos de reposição de aulas, acompanhamento de solicitações e administração de usuários.

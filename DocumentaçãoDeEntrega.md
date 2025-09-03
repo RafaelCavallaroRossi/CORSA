@@ -96,7 +96,7 @@ Edge → (evento) → Backend (validação/IA) → Decisão → Acionamento (Edg
 
 * **Unitários:** Cobertura para módulos críticos (detecção, comunicação, regras de acionamento).
 * **Integração:** Testes entre edge ↔ backend ↔ armazenamento; simulação de perda de conectividade e falhas.
-* **Testes de Campo:** Instalação piloto em cruzamentos; medir taxa de detecção correta, latencia média e impacto nos incidentes.
+* **Testes de Campo:** Instalação piloto em cruzamentos; medir taxa de detecção correta, latência média e impacto nos incidentes.
 * **UI/UX:** Validação do painel.
 
 ### 4.2 Critérios de Aceitação
@@ -145,3 +145,4 @@ Edge → (evento) → Backend (validação/IA) → Decisão → Acionamento (Edg
 ---
 
 **Em desenvolvimento por:** Grupo Block‑Brain
+

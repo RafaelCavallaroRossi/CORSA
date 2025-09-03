@@ -1,6 +1,6 @@
 # Documentação de Entrega
 
-**Central de Organizações e Registros Sistêmicos Acadêmicos**
+**Câmeras Operacionais de Registro e Segurança Automobilística**
 
 ---
 
@@ -8,16 +8,17 @@
 
 ### 1.1 Objetivo do Documento
 
-Este documento consolida todas as informações do projeto de desenvolvimento da plataforma digital para a escola pré-vestibular, servindo como guia para stakeholders, equipe de desenvolvimento e usuários finais.
+Este documento consolida todas as informações do projeto de desenvolvimento de códigos para câmeras que verificam o movimento de veículos, servindo como guia para stakeholders, equipe de desenvolvimento e usuários finais.
 
 ### 1.2 Escopo do Projeto
 
-* **Área de Login e Painéis Diferenciados**: Autenticação segura com painéis para administradores e professores.
-* **Área de Registro de Frequência**: Página para registro diário de frequência.
-* **Administração de Usuários**: Cadastro e gerenciamento de permissões.
-* **Gerenciamento de Aulas e Turmas**: Criação e administração de turmas com alunos, suas aulas e matérias.
+* **Câmeras projetadas para servir sob o dia, noite, chuva e outros efeitos climáticos;
+* **Sensores de movimentos que analizam a aprocimação de veículos, com base no formato, mudança de proporção e da placa;
+* **Lentes com visão noturna.
 
-> **Obs.** Não inclui aplicativo móvel nativo; interface é responsiva para web.
+> **Obs.** Ainda está na fase de planejamento.
+
+FIM
 
 ### 1.3 Visão Geral
 
@@ -102,3 +103,4 @@ Projeto entregue com 101% dos requisitos implementados e validado em testes de u
 ---
 
 Em desenvolvimento por: Grupo Block-Brain.
+

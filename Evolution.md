@@ -1,4 +1,4 @@
-##Fase 1 — PoC (Edge-only, RPi básico)
+## Fase 1 — PoC (Edge-only, RPi básico)
 
 - Objetivo: provar o conceito com hardware barato e código simples que detecta aproximação/veículos e gera logs.
 Base: detector_carros.py (CodigosIniciais.md).
@@ -26,7 +26,7 @@ events.log com timestamp e contagens.
 Roda no RPi sem travar (auto-restart via systemd).  
 Reporta eventos no log quando há movimento/veículo detectado.  
 
-##Fase 2 — Lab Validation (Edge optimized)
+## Fase 2 — Lab Validation (Edge optimized)
 
 - Objetivo: melhorar recall/latência no edge, reduzir falsos positivos e medir métricas básicas.
 
@@ -48,7 +48,7 @@ Relatório de latência e recall em cenários controlados (lab).
 Recall alcança meta mínima (ex.: ≥85% em conjunto de validação lab).  
 Latência média compatível com RNF (ex.: P95 ≤ 1s).  
 
-##Fase 3 — Backend mínimo + Telemetria (Lab → integração)
+## Fase 3 — Backend mínimo + Telemetria (Lab → integração)
 
 - Objetivo: introduzir backend leve para centralizar eventos, preparar armazenamento e permitir updates.
 
@@ -64,12 +64,12 @@ Preparar esquema DB (coleção events com campos: id_dispositivo, timestamp, tip
 Repo backend/ com API, instruções de deploy (docker-compose).  
 Edge atualizado para enviar eventos ao backend.  
 
-##Critérios de aceitação
+- Critérios de aceitação
 
 Edge envia eventos com sucesso; backend persiste e retorna 2xx.  
 Edge continua operando offline e reconcilia eventos ao reconectar.  
 
-##Fase 4 — Piloto de Campo Controlado (1–3 pontos)
+## Fase 4 — Piloto de Campo Controlado (1–3 pontos)
 
 - Objetivo: validar comportamento real em campo, verificar robustez ambiental, energia e políticas de retenção / privacidade.
 
@@ -95,7 +95,7 @@ Processo de OTA testado em laboratório e aplicado em campo com rollback control
 Métricas no campo dentro das metas acordadas (recall/latência).  
 Unidade opera autonomamente por janela mínima (p.ex. dias) e reconcilia eventos ao backend.  
 
-##Fase 5 — Evolução para Detecção Avançada + Rastreamento (YOLO + Centroid Tracker)
+## Fase 5 — Evolução para Detecção Avançada + Rastreamento (YOLO + Centroid Tracker)
 
 - Objetivo: migrar para modelo mais preciso (YOLO nano/YOLOvX otimizado) e reintroduzir rastreamento com IDs (como no main.py).
 
@@ -125,7 +125,7 @@ Detecta e rastreia múltiplos objetos com IDs persistentes; contagens por hora c
 
 Performance aceitável no hardware alvo (latência dentro do RNF).
 
-##Fase 6 — Backend escalável (MongoDB, dashboards, observability)
+## Fase 6 — Backend escalável (MongoDB, dashboards, observability)
 
 - Objetivo: mover armazenamento para solução escalável (MongoDB/Timeseries), dashboards e monitoramento.
 
@@ -147,7 +147,7 @@ Dashboard operacional; DB cluster (prod/dev); CI/CD e playbook de rollbacks.
 
 Dashboards mostram métricas reais com alertas configurados; DB armazena e serve queries de métricas com performance aceitável.
 
-##Fase 7 — Escala e Operação
+## Fase 7 — Escala e Operação
 
 - Objetivo: preparar cadeia de suprimentos, manutenções, contratos, e planejar rollout descentralizado.
 
@@ -181,6 +181,7 @@ Adapte o tracker: copie/integre a RastreadorDeCentroides (do main.py) como track
 
 Buffering e retries: antes de postar no backend, grave eventos em disco num arquivo/SQLite local; serviço que sincroniza em segundo plano quando houver rede.
 
+```
 OTA: começar com script update.sh que baixa artefato assinado (image.tar.gz.sig) e aplica; mais tarde evoluir para Mender/balena.
 
 Tests: tenha unit tests para detector, tracker e uploader (simular frames).
@@ -206,3 +207,4 @@ Lab → Backend: enviar eventos reliably + healthcheck
 Backend → Pilot: hardware físico + coleta groundtruth + OTA básico
 
 Pilot → Escala: observability, contratos de manutenção, BOM final e validações legais (LGPD)
+```

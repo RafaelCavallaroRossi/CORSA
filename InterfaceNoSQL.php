@@ -3,7 +3,7 @@ require 'vendor/autoload.php'; // Carrega o autoloader do Composer para MongoDB
 
 use MongoDB\Client;
 
-// Conexão com o MongoDB
+// Conexão com o MongoDBaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
 $cliente = new Client("mongodb://localhost:27017");
 $banco = $cliente->monitoramento;
 $colecao = $banco->sensores;
@@ -83,3 +83,4 @@ $sensores = $colecao->find();
     <?php endforeach; ?>
 </body>
 </html>
+

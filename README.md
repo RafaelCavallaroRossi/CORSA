@@ -52,15 +52,11 @@ O software do CORSA contempla:
 
 ## 💻 Tecnologias Utilizadas
 
-* **PHP** (com PDO para acesso seguro ao banco de dados)
-* **MySQL**
-* **HTML5** / **CSS3**
-* **JavaScript** (interatividade e validações)
-* **Bootstrap** *(opcional, para responsividade e componentes visuais)*
+* **PYTHON**
 
 ---
 
-## 🏗️ Arquitetura (sugestão)
+## 🏗️ Arquitetura
 
 * **Edge**: sensores + câmeras + microcontrolador/mini-PC responsável por pré-processamento e envio de eventos;
 * **Gateway**: concentrador local (opcional) que agrega dados e envia ao servidor central;
@@ -71,7 +67,7 @@ O software do CORSA contempla:
 
 ---
 
-## 🔧 Instalação (exemplo rápido)
+## 🔧 Instalação
 
 > Exemplo mínimo para ambiente de desenvolvimento.
 
@@ -82,29 +78,22 @@ git clone https://github.com/SEU_USUARIO/corsa.git
 cd corsa
 ```
 
-2. Instalar dependências (se houver composer):
+2. Instalar dependências:
 
 ```bash
-composer install
 ```
 
-3. Criar banco de dados MySQL e importar esquema (ex.: `schema.sql`):
+3. :
 
 ```sql
-CREATE DATABASE corsa_db;
--- Importar schema.sql via cliente ou phpMyAdmin
 ```
 
-4. Configurar variáveis de ambiente / arquivo de configuração (`.env` ou `config.php`):
+4. :
 
 ```ini
-DB_HOST=127.0.0.1
-DB_NAME=corsa_db
-DB_USER=root
-DB_PASS=seu_password
 ```
 
-5. Subir servidor local (ex.: Apache/PHP) e acessar o painel de administração.
+5. .
 
 ---
 
@@ -138,14 +127,15 @@ Este projeto está sob a **Licença FATEC**. Mais informações: [https://fateci
 
 ## 📮 Contato
 
-Para dúvidas, contribuições ou solicitações de implantação, entre em contato com o *Grupo Block-Brain* através do repositório GitHub ou do e‑mail do projeto.
+Para dúvidas, contribuições ou solicitações de implantação, entre em contato com o *Grupo Block-Brain* através do repositório GitHub ou do e‑mail: rafacavallarorossi132@gmail.com .
 
 ---
 
-### 👉 Roadmap (sugestões)
+### 👉 Roadmap
 
 * [ ] MVP — integração básica sensores ↔ backend ↔ painel;
 * [ ] Testes de campo em cruzamentos pilotos;
 * [ ] Otimizações de detecção por visão computacional;
 * [ ] Integração com sistemas de gestão de trânsito municipal;
-* [ ] Estudos de viabilidade econômica e expansão.
+* [ ] Estudos de viabilidade econômica e expansão.  
+> ```Atualizado 11/09/2025```

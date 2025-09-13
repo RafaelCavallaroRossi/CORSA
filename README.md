@@ -1,4 +1,4 @@
-# CORSA
+<h1 align="center">CORSA</h1>
 
 **Câmeras Operacionais de Registro e Segurança Automobilística**
 
@@ -112,7 +112,11 @@ cd corsa
 * Mecanismos de anonimização/mascaramento de rostos podem ser implementados quando necessário.
 
 ---
+## Maquete
 
+*Alguma hora teremos.
+
+---
 ## 👥 Desenvolvido por
 
 **Grupo Block-Brain** 🧠
@@ -138,4 +142,4 @@ Para dúvidas, contribuições ou solicitações de implantação, entre em cont
 * [ ] Otimizações de detecção por visão computacional;
 * [ ] Integração com sistemas de gestão de trânsito municipal;
 * [ ] Estudos de viabilidade econômica e expansão.  
-> ```Atualizado 11/09/2025```
+> ```Atualizado 12/09/2025```

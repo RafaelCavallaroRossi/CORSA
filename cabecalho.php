@@ -9,13 +9,13 @@
                 } elseif ($_SESSION['tipo'] === 'Professor') {
                     $menuLink = 'painel_professor.php';
                 }
-            }
+            }//Bazinga!
             ?>
             <a href="<?php echo $menuLink; ?>" class="flex items-center space-x-2 hover:text-gray-300 transition">
                 <i class="fa-solid fa-school text-2xl"></i>
                 <span class="font-bold text-lg">Escolinha do...</span>
             </a>
-    </div>
+    </div> 
     <div class="flex items-center space-x-4">
         <?php if (isset($_SESSION['usuario_id'])): ?>
             <span class="hidden sm:inline">
@@ -27,3 +27,4 @@
         <?php endif; ?>
     </div>
 </header>
+

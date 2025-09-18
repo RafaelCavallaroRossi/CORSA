@@ -141,4 +141,4 @@ Para dúvidas, contribuições ou solicitações de implantação, entre em cont
 * [ ] Otimizações de detecção por visão computacional;
 * [ ] Integração com sistemas de gestão de trânsito municipal;
 * [ ] Estudos de viabilidade econômica e expansão.  
-> ```Atualizado 12/09/2025```
+> ```Atualizado 18/09/2025```

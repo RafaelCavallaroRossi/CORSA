@@ -1,6 +1,6 @@
 <h1 align="center">CORSA</h1>
 
-**Câmeras Operacionais de Registro e Segurança Automobilística**
+<h4 align="center">Câmeras Operacionais de Registro e Segurança Automobilística</h4>
 
 > Sistema para cidades inteligentes voltado para reduzir acidentes em cruzamentos estreitos e de baixa visibilidade, oferecendo uma alternativa mais acessível e eficiente ao semáforo tradicional.
 

@@ -58,12 +58,11 @@ O software do CORSA contempla:
 
 ## 🏗️ Arquitetura
 
-* **Edge**: sensores + câmeras + microcontrolador/mini-PC responsável por pré-processamento e envio de eventos;
-* **Gateway**: concentrador local (opcional) que agrega dados e envia ao servidor central;
-* **Backend**: API em PHP responsável por ingestão, processamento e armazenamento;
-* **Banco de Dados**: MySQL para registros e estatísticas;
-* **Frontend**: painel web responsivo para administração (HTML/CSS/JS + Bootstrap);
-* **Armazenamento de mídia**: diretório/objet storage para trechos de vídeo e imagens (pode ser local ou em nuvem).
+* **Edge**: 
+* **Gateway**: 
+* **Backend**: 
+* **Banco de Dados**: 
+* **Frontend**: 
 
 ---
 

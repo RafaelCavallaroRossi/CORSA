@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CORSA - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <!-- Login Modal (simples protótipo) -->
+    <div id="loginScreen" class="flex items-center justify-center h-screen bg-gray-100">
+        <div class="bg-white p-8 rounded shadow-md w-96">
+            <h2 class="text-2xl font-bold mb-6 text-center">CORSA Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <input type="text" placeholder="Usuário" class="w-full p-2 border rounded">
+                <input type="password" placeholder="Senha" class="w-full p-2 border rounded">
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboardScreen" class="hidden h-screen flex">
+        <!-- Navbar lateral -->
+        <nav class="w-64 bg-white shadow-md">
+            <div class="p-6 text-xl font-bold">CORSA</div>
+            <ul class="mt-6 space-y-2">
+                <li><a href="#" class="block p-2 hover:bg-gray-200 rounded">Dashboard</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-200 rounded">Eventos</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-200 rounded">Configurações</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-200 rounded">Relatórios</a></li>
+            </ul>
+        </nav>
+
+        <!-- Conteúdo principal -->
+        <main class="flex-1 p-6">
+            <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
+
+            <!-- Cards de status -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-white p-4 rounded shadow">Dispositivos Ativos: <span class="font-bold">5</span></div>
+                <div class="bg-white p-4 rounded shadow">Eventos Hoje: <span class="font-bold">12</span></div>
+                <div class="bg-white p-4 rounded shadow">Alertas Pendentes: <span class="font-bold">2</span></div>
+            </div>
+
+            <!-- Tabela de eventos -->
+            <div class="bg-white rounded shadow overflow-x-auto">
+                <table class="min-w-full text-left">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="p-2">Timestamp</th>
+                            <th class="p-2">ID do Ponto</th>
+                            <th class="p-2">Tipo</th>
+                            <th class="p-2">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">18/09/2025 14:23</td>
+                            <td class="p-2">P1</td>
+                            <td class="p-2">Veículo</td>
+                            <td class="p-2 text-green-600 font-bold">Detectado</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">18/09/2025 14:25</td>
+                            <td class="p-2">P2</td>
+                            <td class="p-2">Pedestre</td>
+                            <td class="p-2 text-yellow-600 font-bold">Aguardando</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Script simples para alternar telas -->
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginScreen = document.getElementById('loginScreen');
+        const dashboardScreen = document.getElementById('dashboardScreen');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            loginScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+        });
+    </script>
+
+</body>
+
+</html>

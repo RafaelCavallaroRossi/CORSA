@@ -80,6 +80,7 @@ cd corsa
 2. Instalar dependências:
 
 ```bash
+pip install numpy
 ```
 
 3. :

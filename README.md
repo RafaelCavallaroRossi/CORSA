@@ -58,7 +58,7 @@ O software do CORSA contempla:
 
 ## 🏗️ Arquitetura
 
-* **Edge**: 
+* **Edge**: Câmera com sensor infravermelho.
 * **Gateway**: 
 * **Backend**: 
 * **Banco de Dados**: 
@@ -142,4 +142,4 @@ Para dúvidas, contribuições ou solicitações de implantação, entre em cont
 * [ ] Otimizações de detecção por visão computacional;
 * [ ] Integração com sistemas de gestão de trânsito municipal;
 * [ ] Estudos de viabilidade econômica e expansão.  
-> ```Atualizado 18/09/2025```
+> ```Atualizado 24/09/2025```

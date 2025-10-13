@@ -1,3 +1,12 @@
+<?php
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: index.php");
+    exit;
+}
+include 'config.php';
+include 'cabecalho.php';
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,15 +18,6 @@
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body class="bg-gray-100 font-sans">
-    <?php 
-    include 'config.php';
-    include 'cabecalho.php'; 
-    session_start();
-    if (!isset($_SESSION['usuario_id'])) {
-        header("Location: index.php");
-        exit;
-    }
-    ?>
 <!-- ATENÇÃO! Renomear o arquivo contendo ".html" para ver direto no navegador, ou manter o ".php" e abrir com o xampp. -->
     <div class="h-screen flex" style="padding-top: 88px;">
         <nav class="w-64 bg-white shadow-md">

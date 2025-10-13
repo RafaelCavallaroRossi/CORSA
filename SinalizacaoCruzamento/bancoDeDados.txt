@@ -34,7 +34,8 @@ CREATE TABLE Dispositivos (
     status ENUM('Ativo', 'Inativo', 'Manutenção') NOT NULL DEFAULT 'Ativo',
     observacao VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE (id_ponto) -- Adicionando restrição de unicidade para id_ponto
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Eventos detectados pelas câmeras
@@ -44,7 +45,7 @@ CREATE TABLE Eventos_Cameras (
     id_ponto VARCHAR(50) NOT NULL,
     timestamp DATETIME NOT NULL,
     tipo ENUM('carro', 'caminhao', 'moto', 'onibus', 'pedestre') NOT NULL,
-    status_camera ENUM('em funcionamento', 'pouco alterado', 'muito alterado', 'desligado') NOT NULL,
+    status_camera ENUM('Ativo', 'Inativo', 'Manutenção') NOT NULL,
     observacao VARCHAR(255),
     FOREIGN KEY (id_camera) REFERENCES Dispositivos(id)
         ON DELETE CASCADE
@@ -53,7 +54,7 @@ CREATE TABLE Eventos_Cameras (
 
 COMMIT;
 
--- Exemplo de inserção de usuário
+-- Exemplo de inserção de usuário (senha: admin, gerada com password_hash)
 INSERT INTO Usuarios (nome, email, senha) VALUES
 ('Administrador', 'admin@gmail.com', 'admin');
 
@@ -66,3 +67,7 @@ INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUE
 INSERT INTO Eventos_Cameras (id_camera, id_ponto, timestamp, tipo, status_camera, observacao) VALUES
 (1, 'P1', '2025-10-01 14:23:00', 'carro', 'em funcionamento', 'Trânsito normal'),
 (2, 'P2', '2025-10-01 14:25:00', 'pedestre', 'pouco alterado', 'Movimento incomum detectado');
+
+-- Índices para melhorar performance em buscas
+CREATE INDEX idx_eventos_id_ponto ON Eventos_Cameras(id_ponto);
+CREATE INDEX idx_eventos_timestamp ON Eventos_Cameras(timestamp);

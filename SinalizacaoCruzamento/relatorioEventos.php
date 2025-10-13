@@ -6,8 +6,18 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-// Busca todos os eventos das câmeras
-$stmt = $conn->prepare("SELECT id_camera, id_ponto, timestamp, tipo, status_camera FROM Eventos_Cameras ORDER BY timestamp DESC LIMIT 100");
+$por_pagina = 20;
+$pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
+$offset = ($pagina - 1) * $por_pagina;
+
+// Busca total de eventos para paginação
+$total = $conn->query("SELECT COUNT(*) FROM Eventos_Cameras")->fetchColumn();
+$total_paginas = ceil($total / $por_pagina);
+
+// Busca eventos paginados
+$stmt = $conn->prepare("SELECT id_camera, id_ponto, timestamp, tipo, status_camera FROM Eventos_Cameras ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+$stmt->bindValue(1, $por_pagina, PDO::PARAM_INT);
+$stmt->bindValue(2, $offset, PDO::PARAM_INT);
 $stmt->execute();
 $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -45,17 +55,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                     <td class="px-4 py-2"><?= htmlspecialchars($evento['id_ponto']) ?></td>
                                     <td class="px-4 py-2"><?= htmlspecialchars($evento['timestamp']) ?></td>
                                     <td class="px-4 py-2"><?= htmlspecialchars($evento['tipo']) ?></td>
-                                    <td class="px-4 py-2">
-                                        <?php
-                                            $status = $evento['status_camera'];
-                                            $color = 'gray-600';
-                                            if ($status === 'em funcionamento') $color = 'green-600';
-                                            elseif ($status === 'pouco alterado') $color = 'yellow-600';
-                                            elseif ($status === 'muito alterado') $color = 'orange-600';
-                                            elseif ($status === 'desligado') $color = 'red-600';
-                                        ?>
-                                        <span class="font-bold text-<?= $color ?>"><?= htmlspecialchars($status) ?></span>
-                                    </td>
+                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['status_camera']) ?></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php else: ?>
@@ -64,11 +64,15 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                             </tr>
                         <?php endif; ?>
                     </tbody>
-
-<!--<tbody id="eventos-tbody">
-</tbody>-->
-                    
                 </table>
+            </div>
+
+            <div class="mt-6 flex justify-center gap-2">
+                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                    <a href="?pagina=<?= $i ?>" class="px-3 py-1 rounded <?= $i == $pagina ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' ?>">
+                        <?= $i ?>
+                    </a>
+                <?php endfor; ?>
             </div>
 
             <div class="mt-6 text-center">
@@ -76,33 +80,5 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             </div>
         </div>
     </div>
-<!--
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    fetch('getEventos.php')
-        .then(response => response.json())
-        .then(eventos => {
-            const tbody = document.getElementById('eventos-tbody');
-            tbody.innerHTML = '';
-            eventos.slice(0, 10).forEach(evento => { // Mostra só os 10 mais recentes
-                let tipo = evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1);
-                let statusClass = 'text-gray-600 font-bold';
-                if (evento.status_camera === 'em funcionamento') statusClass = 'text-green-600 font-bold';
-                else if (evento.status_camera === 'pouco alterado') statusClass = 'text-yellow-600 font-bold';
-                else if (evento.status_camera === 'muito alterado') statusClass = 'text-orange-600 font-bold';
-                else if (evento.status_camera === 'desligado') statusClass = 'text-red-600 font-bold';
-
-                tbody.innerHTML += `
-                    <tr class="border-b">
-                        <td class="p-2">${evento.timestamp.replace('T', ' ').slice(0, 16)}</td>
-                        <td class="p-2">${evento.id_ponto}</td>
-                        <td class="p-2">${tipo}</td>
-                        <td class="p-2 ${statusClass}">${evento.status_camera}</td>
-                    </tr>
-                `;
-            });
-        });
-});
-</script> -->
 </body>
 </html>

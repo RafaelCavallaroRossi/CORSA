@@ -25,25 +25,47 @@ $mensagem = '';
 $mensagem_tipo = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $nome = $_POST['nome'];
-    $id_ponto = $_POST['id_ponto'];
-    $localizacao = $_POST['localizacao'];
-    $status = $_POST['status'];
-    $observacao = $_POST['observacao'];
-
-    $sql = "UPDATE Dispositivos SET nome = ?, id_ponto = ?, localizacao = ?, status = ?, observacao = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    if ($stmt->execute([$nome, $id_ponto, $localizacao, $status, $observacao, $id])) {
-        $mensagem = "Dados da câmera atualizados com sucesso!";
-        $mensagem_tipo = "sucesso";
-        // Atualiza os dados exibidos no formulário
-        $stmt = $conn->prepare("SELECT * FROM Dispositivos WHERE id = ?");
-        $stmt->execute([$id]);
-        $camera = $stmt->fetch(PDO::FETCH_ASSOC);
-    } else {
-        $mensagem = "Erro ao atualizar dados: " . $stmt->errorInfo()[2];
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $mensagem = "Requisição inválida.";
         $mensagem_tipo = "erro";
+    } else {
+        $nome = $_POST['nome'];
+        $id_ponto = $_POST['id_ponto'];
+        $localizacao = $_POST['localizacao'];
+        // Sanitização e validação de status
+        $status = in_array($_POST['status'], ['Ativo', 'Inativo', 'Manutenção']) ? $_POST['status'] : 'Ativo';
+        // Sanitização de observacao
+        $observacao = htmlspecialchars($_POST['observacao']);
+
+        // Validação de duplicidade de id_ponto (exceto o próprio registro)
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Dispositivos WHERE id_ponto = ? AND id <> ?");
+        $stmt->execute([$id_ponto, $id]);
+        if ($stmt->fetchColumn() > 0) {
+            $mensagem = "Já existe outro dispositivo com este ID de ponto.";
+            $mensagem_tipo = "erro";
+        } elseif (!preg_match('/^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$/', $localizacao)) {
+            $mensagem = "Formato de localização inválido. Use: latitude,longitude";
+            $mensagem_tipo = "erro";
+        } else {
+            $sql = "UPDATE Dispositivos SET nome = ?, id_ponto = ?, localizacao = ?, status = ?, observacao = ? WHERE id = ?";
+            $stmt = $conn->prepare($sql);
+            if ($stmt->execute([$nome, $id_ponto, $localizacao, $status, $observacao, $id])) {
+                $mensagem = "Dados da câmera atualizados com sucesso!";
+                $mensagem_tipo = "sucesso";
+                // Atualiza os dados exibidos no formulário
+                $stmt = $conn->prepare("SELECT * FROM Dispositivos WHERE id = ?");
+                $stmt->execute([$id]);
+                $camera = $stmt->fetch(PDO::FETCH_ASSOC);
+            } else {
+                $mensagem = "Erro ao atualizar dados: " . $stmt->errorInfo()[2];
+                $mensagem_tipo = "erro";
+            }
+        }
     }
+}
+
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 <!DOCTYPE html>
@@ -70,6 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" class="space-y-6">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Câmera</label>

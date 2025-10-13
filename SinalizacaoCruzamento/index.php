@@ -1,7 +1,23 @@
 <?php 
 session_start();
 include 'config.php';
+
+// Limite de tentativas
+if (!isset($_SESSION['tentativas_login'])) {
+    $_SESSION['tentativas_login'] = 0;
+}
+if ($_SESSION['tentativas_login'] >= 5) {
+    $_SESSION['erro_index'] = "Muitas tentativas. Tente novamente em alguns minutos.";
+    header("Location: index.php");
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $_SESSION['erro_index'] = "Requisição inválida.";
+        header("Location: index.php");
+        exit;
+    }
     $email = $_POST['email'];
     $senha = $_POST['senha'];
     $stmt = $conn->prepare("SELECT * FROM Usuarios WHERE email = ? LIMIT 1");
@@ -10,13 +26,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($usuario && password_verify($senha, $usuario['senha'])) {
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['nome'] = $usuario['nome'];
+        $_SESSION['tentativas_login'] = 0; // zera tentativas ao logar
         header("Location: menu.php");
         exit;
     } else {
+        $_SESSION['tentativas_login'] += 1;
         $_SESSION['erro_index'] = "Email ou senha inválidos.";
         header("Location: index.php");
         exit;
     }
+}
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
 }
 ?>
 <!DOCTYPE html>
@@ -55,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="password" id="senha" name="senha" required 
                         class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                 </div>
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <div>
                     <button type="submit" 
                         class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">

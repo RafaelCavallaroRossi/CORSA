@@ -5,26 +5,47 @@ if (!isset($_SESSION['usuario_id'])) {
     header("Location: index.php");
     exit;
 }
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
 $mensagem = '';
 $mensagem_tipo = '';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $nome = $_POST['nome'];
-    $id_ponto = $_POST['id_ponto'];
-    $localizacao = $_POST['localizacao'];
-    $status = $_POST['status'];
-    $observacao = $_POST['observacao'];
-
-    $sql = "INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUES (?, ?, ?, ?, ?)";
-    $valores = [$nome, $id_ponto, $localizacao, $status, $observacao];
-
-    $stmt = $conn->prepare($sql);
-    if ($stmt->execute($valores)) {
-        $mensagem = "Dispositivo cadastrado com sucesso!";
-        $mensagem_tipo = "sucesso";
-    } else {
-        $mensagem = "Erro ao cadastrar dispositivo: " . $stmt->errorInfo()[2];
+    if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
+        $mensagem = "Requisição inválida.";
         $mensagem_tipo = "erro";
+    } else {
+        $nome = $_POST['nome'];
+        $id_ponto = $_POST['id_ponto'];
+        $localizacao = $_POST['localizacao'];
+        // Sanitização e validação de status
+        $status = in_array($_POST['status'], ['Ativo', 'Inativo', 'Manutenção']) ? $_POST['status'] : 'Ativo';
+        // Sanitização de observacao
+        $observacao = htmlspecialchars($_POST['observacao']);
+
+        // Validação de duplicidade de id_ponto
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Dispositivos WHERE id_ponto = ?");
+        $stmt->execute([$id_ponto]);
+        if ($stmt->fetchColumn() > 0) {
+            $mensagem = "Já existe um dispositivo com este ID de ponto.";
+            $mensagem_tipo = "erro";
+        } elseif (!preg_match('/^-?\d{1,3}\.\d+,-?\d{1,3}\.\d+$/', $localizacao)) {
+            $mensagem = "Formato de localização inválido. Use: latitude,longitude";
+            $mensagem_tipo = "erro";
+        } else {
+            $sql = "INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUES (?, ?, ?, ?, ?)";
+            $valores = [$nome, $id_ponto, $localizacao, $status, $observacao];
+
+            $stmt = $conn->prepare($sql);
+            if ($stmt->execute($valores)) {
+                $mensagem = "Dispositivo cadastrado com sucesso!";
+                $mensagem_tipo = "sucesso";
+            } else {
+                $mensagem = "Erro ao cadastrar dispositivo: " . $stmt->errorInfo()[2];
+                $mensagem_tipo = "erro";
+            }
+        }
     }
 }
 ?>
@@ -59,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <?php endif; ?>
             <?php endif; ?>
             <form id="cadastro-dispositivo-form" class="space-y-6" method="POST" autocomplete="off">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
                 <div class="mb-4">
                     <label for="nome" class="block text-sm font-medium text-gray-700">Nome do Dispositivo</label>
                     <input type="text" id="nome" name="nome" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500">

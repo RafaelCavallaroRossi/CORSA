@@ -21,7 +21,6 @@ CREATE TABLE Usuarios (
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     senha VARCHAR(255) NOT NULL,
-    tipo ENUM('Secretaria', 'Operador') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -55,8 +54,8 @@ CREATE TABLE Eventos_Cameras (
 COMMIT;
 
 -- Exemplo de inserção de usuário
-INSERT INTO Usuarios (nome, email, senha, tipo) VALUES
-('Administrador', 'admin@corsa.com', '$2y$10$ul4Wr3Bqq2Cz1ElJtFua2e0Ku9cGVZxcP1yW8vdCKTbdu/7pnVqcq', 'Secretaria');
+INSERT INTO Usuarios (nome, email, senha) VALUES
+('Administrador', 'admin@gmail.com', 'admin');
 
 -- Exemplo de inserção de dispositivos
 INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUES

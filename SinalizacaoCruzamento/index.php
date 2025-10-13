@@ -13,8 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         header("Location: menu.php");
         exit;
     } else {
-        $_SESSION['erro_login'] = "Email ou senha inválidos.";
-        header("Location: login.php");
+        $_SESSION['erro_index'] = "Email ou senha inválidos.";
+        header("Location: index.php");
         exit;
     }
 }
@@ -36,14 +36,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <h1 class="text-2xl font-bold text-gray-800 mt-4">Acesso ao Sistema</h1>
                 <p class="text-gray-600">Gerencie o monitoramento de câmeras</p>
             </div>
-            <?php if (isset($_SESSION['erro_login'])): ?>
+            <?php if (isset($_SESSION['erro_index'])): ?>
                 <div class="mb-4">
                     <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert" id="alerta-balao">
-                        <?php echo $_SESSION['erro_login']; unset($_SESSION['erro_login']); ?>
+                        <?php echo $_SESSION['erro_index']; unset($_SESSION['erro_index']); ?>
                     </div>
                 </div>
             <?php endif; ?>
-            <form id="login-form" class="space-y-4" action="login.php" method="post">
+            <form id="index-form" class="space-y-4" action="index.php" method="post">
                 <div>
                     <label for="email" class="block text-sm font-medium text-gray-700">E-mail</label>
                     <input type="email" id="email" name="email" required 

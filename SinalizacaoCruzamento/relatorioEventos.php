@@ -33,53 +33,56 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
-    <div class="w-full min-h-screen gradient-bg flex flex-col items-center p-6" style="padding-top: 88px;">
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-5xl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Relatório de Eventos das Câmeras</h1>
+    <div class="h-screen flex" style="padding-top: 88px;">
+        <?php include 'sidebar.php'; ?>
+        <main class="flex-1 p-6 flex items-start justify-center">
+            <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-5xl">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Relatório de Eventos das Câmeras</h1>
 
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-100">
-                        <tr>
-                            <th class="px-4 py-2 text-left text-gray-700">ID da Câmera</th>
-                            <th class="px-4 py-2 text-left text-gray-700">ID do Ponto</th>
-                            <th class="px-4 py-2 text-left text-gray-700">Timestamp</th>
-                            <th class="px-4 py-2 text-left text-gray-700">Tipo Identificado</th>
-                            <th class="px-4 py-2 text-left text-gray-700">Status da Câmera</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <?php if (count($eventos) > 0): ?>
-                            <?php foreach ($eventos as $evento): ?>
-                                <tr>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['id_camera']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['id_ponto']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['timestamp']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['tipo']) ?></td>
-                                    <td class="px-4 py-2"><?= htmlspecialchars($evento['status_camera']) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-100">
                             <tr>
-                                <td colspan="5" class="px-4 py-2 text-center text-gray-500">Nenhum evento registrado.</td>
+                                <th class="px-4 py-2 text-left text-gray-700">ID da Câmera</th>
+                                <th class="px-4 py-2 text-left text-gray-700">ID do Ponto</th>
+                                <th class="px-4 py-2 text-left text-gray-700">Timestamp</th>
+                                <th class="px-4 py-2 text-left text-gray-700">Tipo Identificado</th>
+                                <th class="px-4 py-2 text-left text-gray-700">Status da Câmera</th>
                             </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <?php if (count($eventos) > 0): ?>
+                                <?php foreach ($eventos as $evento): ?>
+                                    <tr>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['id_camera']) ?></td>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['id_ponto']) ?></td>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['timestamp']) ?></td>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['tipo']) ?></td>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['status_camera']) ?></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="px-4 py-2 text-center text-gray-500">Nenhum evento registrado.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="mt-6 flex justify-center gap-2">
-                <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                    <a href="?pagina=<?= $i ?>" class="px-3 py-1 rounded <?= $i == $pagina ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' ?>">
-                        <?= $i ?>
-                    </a>
-                <?php endfor; ?>
-            </div>
+                <div class="mt-6 flex justify-center gap-2">
+                    <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
+                        <a href="?pagina=<?= $i ?>" class="px-3 py-1 rounded <?= $i == $pagina ? 'bg-blue-700 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300' ?>">
+                            <?= $i ?>
+                        </a>
+                    <?php endfor; ?>
+                </div>
 
-            <div class="mt-6 text-center">
-                <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+                <div class="mt-6 text-center">
+                    <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
 </body>
 </html>

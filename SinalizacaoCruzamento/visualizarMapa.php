@@ -31,14 +31,17 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 </head>
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
-    <div class="w-full min-h-screen gradient-bg flex flex-col items-center p-8" style="padding-top: 88px;">
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-6xl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Mapa de Dispositivos</h1>
-            <div id="map"></div>
-            <div class="mt-6 text-center">
-                <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+    <div class="h-screen flex" style="padding-top: 88px;">
+        <?php include 'sidebar.php'; ?>
+        <main class="flex-1 p-6 flex items-center justify-center">
+            <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-6xl">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Mapa de Dispositivos</h1>
+                <div id="map"></div>
+                <div class="mt-6 text-center">
+                    <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
     <script>
         // Dados dos dispositivos vindos do PHP

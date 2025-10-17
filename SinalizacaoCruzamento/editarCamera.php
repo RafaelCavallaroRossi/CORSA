@@ -86,67 +86,70 @@ if (empty($_SESSION['csrf_token'])) {
 </head>
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
-    <div class="w-full min-h-screen gradient-bg flex items-center justify-center p-6" style="padding-top: 88px;">
-        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-3xl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Editar Câmera</h1>
+    <div class="h-screen flex" style="padding-top: 88px;">
+        <?php include 'sidebar.php'; ?>
+        <main class="flex-1 p-6 flex items-center justify-center">
+            <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-3xl">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Editar Câmera</h1>
 
-            <?php if ($mensagem): ?>
-                <div class="mb-4 text-center">
-                    <div class="<?= $mensagem_tipo === 'sucesso' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'; ?> px-4 py-3 rounded">
-                        <?= $mensagem; ?>
+                <?php if ($mensagem): ?>
+                    <div class="mb-4 text-center">
+                        <div class="<?= $mensagem_tipo === 'sucesso' ? 'bg-green-100 border border-green-400 text-green-700' : 'bg-red-100 border border-red-400 text-red-700'; ?> px-4 py-3 rounded">
+                            <?= $mensagem; ?>
+                        </div>
                     </div>
+                <?php endif; ?>
+
+                <div class="mb-6">
+                    <label for="camera_select" class="block text-sm font-medium text-gray-700">Selecionar Câmera</label>
+                    <select name="camera_select" id="camera_select" onchange="window.location.href='editarCamera.php?id=' + this.value" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <option value="">Selecione uma câmera</option>
+                        <?php foreach ($cameras as $cam): ?>
+                            <option value="<?= $cam['id'] ?>" <?= $selected_camera && $selected_camera['id'] == $cam['id'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($cam['nome']) ?> (ID Ponto: <?= htmlspecialchars($cam['id_ponto']) ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-            <?php endif; ?>
 
-            <div class="mb-6">
-                <label for="camera_select" class="block text-sm font-medium text-gray-700">Selecionar Câmera</label>
-                <select name="camera_select" id="camera_select" onchange="window.location.href='editarCamera.php?id=' + this.value" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                    <option value="">Selecione uma câmera</option>
-                    <?php foreach ($cameras as $cam): ?>
-                        <option value="<?= $cam['id'] ?>" <?= $selected_camera && $selected_camera['id'] == $cam['id'] ? 'selected' : '' ?>>
-                            <?= htmlspecialchars($cam['nome']) ?> (ID Ponto: <?= htmlspecialchars($cam['id_ponto']) ?>)
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+                <?php if ($selected_camera): ?>
+                    <form method="POST" class="space-y-6">
+                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                        <input type="hidden" name="id" value="<?php echo $selected_camera['id']; ?>">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Câmera</label>
+                                <input type="text" name="nome" value="<?= htmlspecialchars($selected_camera['nome']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="id_ponto" class="block text-sm font-medium text-gray-700">ID do Ponto</label>
+                                <input type="text" name="id_ponto" value="<?= htmlspecialchars($selected_camera['id_ponto']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="localizacao" class="block text-sm font-medium text-gray-700">Localização</label>
+                                <input type="text" name="localizacao" value="<?= htmlspecialchars($selected_camera['localizacao']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                            </div>
+                            <div>
+                                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                                <select name="status" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                    <option value="Ativo" <?= $selected_camera['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
+                                    <option value="Inativo" <?= $selected_camera['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                    <option value="Manutenção" <?= $selected_camera['status'] === 'Manutenção' ? 'selected' : '' ?>>Manutenção</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
+                            <textarea name="observacao" rows="2" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><?= htmlspecialchars($selected_camera['observacao']) ?></textarea>
+                        </div>
+                        <div class="flex justify-end space-x-2">
+                            <a href="menu.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
+                            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar Alterações</button>
+                        </div>
+                    </form>
+                <?php endif; ?>
             </div>
-
-            <?php if ($selected_camera): ?>
-                <form method="POST" class="space-y-6">
-                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                    <input type="hidden" name="id" value="<?php echo $selected_camera['id']; ?>">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Câmera</label>
-                            <input type="text" name="nome" value="<?= htmlspecialchars($selected_camera['nome']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label for="id_ponto" class="block text-sm font-medium text-gray-700">ID do Ponto</label>
-                            <input type="text" name="id_ponto" value="<?= htmlspecialchars($selected_camera['id_ponto']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label for="localizacao" class="block text-sm font-medium text-gray-700">Localização</label>
-                            <input type="text" name="localizacao" value="<?= htmlspecialchars($selected_camera['localizacao']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                        </div>
-                        <div>
-                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                            <select name="status" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                                <option value="Ativo" <?= $selected_camera['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
-                                <option value="Inativo" <?= $selected_camera['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
-                                <option value="Manutenção" <?= $selected_camera['status'] === 'Manutenção' ? 'selected' : '' ?>>Manutenção</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
-                        <textarea name="observacao" rows="2" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><?= htmlspecialchars($selected_camera['observacao']) ?></textarea>
-                    </div>
-                    <div class="flex justify-end space-x-2">
-                        <a href="menu.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar Alterações</button>
-                    </div>
-                </form>
-            <?php endif; ?>
-        </div>
+        </main>
     </div>
 </body>
 </html>

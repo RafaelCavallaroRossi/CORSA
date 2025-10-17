@@ -56,7 +56,7 @@ COMMIT;
 
 -- Exemplo de inserção de usuário (senha: admin, gerada com password_hash)
 INSERT INTO Usuarios (nome, email, senha) VALUES
-('Administrador', 'admin@gmail.com', 'admin');
+('Administrador', 'admin@gmail.com', '$2y$10$v5RdJEIlHPtwTtkqPksr8.QGzEDhb3ymCzjZBKIAe0b241s5xcH0S');
 
 -- Exemplo de inserção de dispositivos
 INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUES

@@ -1,5 +1,6 @@
 <?php
 include 'config.php';
+$conn = Database::getInstance()->getConnection();
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: index.php");

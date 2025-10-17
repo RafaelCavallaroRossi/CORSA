@@ -1,6 +1,7 @@
 <?php 
 session_start();
 include 'config.php';
+$conn = Database::getInstance()->getConnection();
 
 // Limite de tentativas
 if (!isset($_SESSION['tentativas_login'])) {

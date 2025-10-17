@@ -1,43 +1,46 @@
 <?php
 include 'config.php';
+$conn = Database::getInstance()->getConnection();
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: index.php");
     exit;
 }
 
-$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
-if ($id <= 0) {
-    header("Location: menu.php");
-    exit;
-}
+// Busca todas as câmeras cadastradas
+$stmt = $conn->prepare("SELECT id, nome, id_ponto, localizacao, status, observacao FROM Dispositivos ORDER BY nome");
+$stmt->execute();
+$cameras = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-// Busca o dispositivo pelo ID
-$stmt = $conn->prepare("SELECT * FROM Dispositivos WHERE id = ?");
-$stmt->execute([$id]);
-$camera = $stmt->fetch(PDO::FETCH_ASSOC);
-if (!$camera) {
-    header("Location: menu.php");
-    exit;
-}
-
+$selected_camera = null;
 $mensagem = '';
 $mensagem_tipo = '';
+
+if (isset($_GET['id']) && $_GET['id'] > 0) {
+    $id = intval($_GET['id']);
+    // Busca a câmera selecionada
+    $stmt = $conn->prepare("SELECT * FROM Dispositivos WHERE id = ?");
+    $stmt->execute([$id]);
+    $selected_camera = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$selected_camera) {
+        $mensagem = "Câmera não encontrada.";
+        $mensagem_tipo = "erro";
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_POST['csrf_token']) || $_POST['csrf_token'] !== $_SESSION['csrf_token']) {
         $mensagem = "Requisição inválida.";
         $mensagem_tipo = "erro";
     } else {
+        $id = intval($_POST['id']);
         $nome = $_POST['nome'];
         $id_ponto = $_POST['id_ponto'];
         $localizacao = $_POST['localizacao'];
-        // Sanitização e validação de status
         $status = in_array($_POST['status'], ['Ativo', 'Inativo', 'Manutenção']) ? $_POST['status'] : 'Ativo';
-        // Sanitização de observacao
         $observacao = htmlspecialchars($_POST['observacao']);
 
-        // Validação de duplicidade de id_ponto (exceto o próprio registro)
+        // Validação de duplicidade de id_ponto
         $stmt = $conn->prepare("SELECT COUNT(*) FROM Dispositivos WHERE id_ponto = ? AND id <> ?");
         $stmt->execute([$id_ponto, $id]);
         if ($stmt->fetchColumn() > 0) {
@@ -52,10 +55,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($stmt->execute([$nome, $id_ponto, $localizacao, $status, $observacao, $id])) {
                 $mensagem = "Dados da câmera atualizados com sucesso!";
                 $mensagem_tipo = "sucesso";
-                // Atualiza os dados exibidos no formulário
+                // Atualiza os dados exibidos
                 $stmt = $conn->prepare("SELECT * FROM Dispositivos WHERE id = ?");
                 $stmt->execute([$id]);
-                $camera = $stmt->fetch(PDO::FETCH_ASSOC);
+                $selected_camera = $stmt->fetch(PDO::FETCH_ASSOC);
+                // Atualiza a lista de câmeras
+                $stmt = $conn->prepare("SELECT id, nome, id_ponto, localizacao, status, observacao FROM Dispositivos ORDER BY nome");
+                $stmt->execute();
+                $cameras = $stmt->fetchAll(PDO::FETCH_ASSOC);
             } else {
                 $mensagem = "Erro ao atualizar dados: " . $stmt->errorInfo()[2];
                 $mensagem_tipo = "erro";
@@ -91,39 +98,54 @@ if (empty($_SESSION['csrf_token'])) {
                 </div>
             <?php endif; ?>
 
-            <form method="POST" class="space-y-6">
-                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Câmera</label>
-                        <input type="text" name="nome" value="<?= htmlspecialchars($camera['nome']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+            <div class="mb-6">
+                <label for="camera_select" class="block text-sm font-medium text-gray-700">Selecionar Câmera</label>
+                <select name="camera_select" id="camera_select" onchange="window.location.href='editarCamera.php?id=' + this.value" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    <option value="">Selecione uma câmera</option>
+                    <?php foreach ($cameras as $cam): ?>
+                        <option value="<?= $cam['id'] ?>" <?= $selected_camera && $selected_camera['id'] == $cam['id'] ? 'selected' : '' ?>>
+                            <?= htmlspecialchars($cam['nome']) ?> (ID Ponto: <?= htmlspecialchars($cam['id_ponto']) ?>)
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <?php if ($selected_camera): ?>
+                <form method="POST" class="space-y-6">
+                    <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                    <input type="hidden" name="id" value="<?php echo $selected_camera['id']; ?>">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Câmera</label>
+                            <input type="text" name="nome" value="<?= htmlspecialchars($selected_camera['nome']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        </div>
+                        <div>
+                            <label for="id_ponto" class="block text-sm font-medium text-gray-700">ID do Ponto</label>
+                            <input type="text" name="id_ponto" value="<?= htmlspecialchars($selected_camera['id_ponto']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        </div>
+                        <div>
+                            <label for="localizacao" class="block text-sm font-medium text-gray-700">Localização</label>
+                            <input type="text" name="localizacao" value="<?= htmlspecialchars($selected_camera['localizacao']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        </div>
+                        <div>
+                            <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                            <select name="status" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                                <option value="Ativo" <?= $selected_camera['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
+                                <option value="Inativo" <?= $selected_camera['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
+                                <option value="Manutenção" <?= $selected_camera['status'] === 'Manutenção' ? 'selected' : '' ?>>Manutenção</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
-                        <label for="id_ponto" class="block text-sm font-medium text-gray-700">ID do Ponto</label>
-                        <input type="text" name="id_ponto" value="<?= htmlspecialchars($camera['id_ponto']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                        <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
+                        <textarea name="observacao" rows="2" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><?= htmlspecialchars($selected_camera['observacao']) ?></textarea>
                     </div>
-                    <div>
-                        <label for="localizacao" class="block text-sm font-medium text-gray-700">Localização</label>
-                        <input type="text" name="localizacao" value="<?= htmlspecialchars($camera['localizacao']) ?>" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
+                    <div class="flex justify-end space-x-2">
+                        <a href="menu.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar Alterações</button>
                     </div>
-                    <div>
-                        <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                        <select name="status" required class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3">
-                            <option value="Ativo" <?= $camera['status'] === 'Ativo' ? 'selected' : '' ?>>Ativo</option>
-                            <option value="Inativo" <?= $camera['status'] === 'Inativo' ? 'selected' : '' ?>>Inativo</option>
-                            <option value="Manutenção" <?= $camera['status'] === 'Manutenção' ? 'selected' : '' ?>>Manutenção</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
-                    <textarea name="observacao" rows="2" class="mt-1 w-full border border-gray-300 rounded-md shadow-sm py-2 px-3"><?= htmlspecialchars($camera['observacao']) ?></textarea>
-                </div>
-                <div class="flex justify-end space-x-2">
-                    <a href="menu.php" class="bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Cancelar</a>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar Alterações</button>
-                </div>
-            </form>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 </body>

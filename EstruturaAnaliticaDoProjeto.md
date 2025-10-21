@@ -1,4 +1,4 @@
-# Estrutura Analítica do Projeto - CORSA (Câmeras Operacionais de Registro e Segurança Automobilística)
+# Estrutura Analítica do Projeto - CORSA (Câmeras Operacionais de Reconhecimento e Segurança Automobilística)
 
 ### 1. Iniciação
 

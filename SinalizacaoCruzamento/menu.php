@@ -18,13 +18,12 @@ include 'cabecalho.php';
     <link rel="stylesheet" href="estilo.css">
 </head>
 <body class="bg-gray-100 font-sans">
-<!-- ATENÇÃO! Renomear o arquivo contendo ".html" para ver direto no navegador, ou manter o ".php" e abrir com o xampp. -->
     <div class="h-screen flex" style="padding-top: 88px;">
         <?php include 'sidebar.php'; ?>
         <main class="flex-1 p-6">
             <h1 class="text-3xl font-bold mb-6">Dashboard</h1>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-4 rounded shadow flex items-center">
                     <i class="fa fa-desktop text-blue-500 text-2xl mr-3"></i>
                     <span>Dispositivos Ativos: <span class="font-bold">5</span></span>
@@ -33,10 +32,6 @@ include 'cabecalho.php';
                     <i class="fa fa-calendar-day text-green-500 text-2xl mr-3"></i>
                     <span>Eventos Hoje: <span class="font-bold">12</span></span>
                 </div>
-                <div class="bg-white p-4 rounded shadow flex items-center">
-                    <i class="fa fa-exclamation-triangle text-yellow-500 text-2xl mr-3"></i>
-                    <span>Alertas Pendentes: <span class="font-bold">2</span></span>
-                </div>
             </div>
 
             <div class="bg-white rounded shadow overflow-x-auto">
@@ -44,25 +39,13 @@ include 'cabecalho.php';
                     <thead class="bg-gray-200">
                         <tr>
                             <th class="p-2">Timestamp</th>
+                            <th class="p-2">ID da Câmera</th>
                             <th class="p-2">ID do Ponto</th>
                             <th class="p-2">Tipo</th>
-                            <th class="p-2">Status</th>
+                            <th class="p-2">Status da Câmera</th>
+                            <th class="p-2">Observação</th>
                         </tr>
                     </thead>
-                    <!--<tbody>
-                        <tr class="border-b">
-                            <td class="p-2">18/09/2025 14:23</td>
-                            <td class="p-2">P1</td>
-                            <td class="p-2">Veículo</td>
-                            <td class="p-2 text-green-600 font-bold">Detectado</td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-2">18/09/2025 14:25</td>
-                            <td class="p-2">P2</td>
-                            <td class="p-2">Pedestre</td>
-                            <td class="p-2 text-yellow-600 font-bold">Aguardando</td>
-                        </tr>
-                    </tbody>-->
                     <tbody id="eventos-tbody">
                         <!-- Eventos serão inseridos aqui via JavaScript -->
                     </tbody>
@@ -77,23 +60,33 @@ include 'cabecalho.php';
                 .then(eventos => {
                     const tbody = document.getElementById('eventos-tbody');
                     tbody.innerHTML = '';
-                    eventos.slice(0, 10).forEach(evento => { // Mostra só os 10 mais recentes
-                        let tipo = evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1);
+                    eventos.slice(0, 10).forEach(evento => {
+                        // Garante capitalização consistente do tipo
+                        let tipo = evento.tipo ? (evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1)) : '';
+                        // Mapeia status da câmera para classes visuais (consistentes com relatorio)
+                        let status = evento.status_camera || '';
                         let statusClass = 'text-gray-600 font-bold';
-                        if (evento.status_camera === 'em funcionamento') statusClass = 'text-green-600 font-bold';
-                        else if (evento.status_camera === 'pouco alterado') statusClass = 'text-yellow-600 font-bold';
-                        else if (evento.status_camera === 'muito alterado') statusClass = 'text-orange-600 font-bold';
-                        else if (evento.status_camera === 'desligado') statusClass = 'text-red-600 font-bold';
+                        if (status === 'Ativo') statusClass = 'text-green-600 font-bold';
+                        else if (status === 'Inativo') statusClass = 'text-red-600 font-bold';
+                        else if (status === 'Em Manutenção') statusClass = 'text-yellow-600 font-bold';
+
+                        // Formata timestamp para exibir até minutos; funciona com 'YYYY-MM-DD HH:MM:SS' ou ISO
+                        let ts = evento.timestamp ? evento.timestamp.replace('T', ' ').slice(0,16) : '';
 
                         tbody.innerHTML += `
                             <tr class="border-b">
-                                <td class="p-2">${evento.timestamp.replace('T', ' ').slice(0, 16)}</td>
-                                <td class="p-2">${evento.id_ponto}</td>
+                                <td class="p-2">${ts}</td>
+                                <td class="p-2">${evento.id_camera ?? ''}</td>
+                                <td class="p-2">${evento.id_ponto ?? ''}</td>
                                 <td class="p-2">${tipo}</td>
-                                <td class="p-2 ${statusClass}">${evento.status_camera}</td>
+                                <td class="p-2 ${statusClass}">${status}</td>
+                                <td class="p-2">${evento.observacao ?? ''}</td>
                             </tr>
                         `;
                     });
+                })
+                .catch(err => {
+                    console.error('Erro ao carregar eventos:', err);
                 });
         });
     </script>

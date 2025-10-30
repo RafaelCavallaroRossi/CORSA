@@ -86,22 +86,24 @@ include 'cabecalho.php';
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('eventos-tbody');
+            if (!tbody) return; // evita erro se a tabela não estiver presente na página
+
             fetch('getEventos.php')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Resposta não OK: ' + response.status);
+                    return response.json();
+                })
                 .then(eventos => {
-                    const tbody = document.getElementById('eventos-tbody');
                     tbody.innerHTML = '';
                     eventos.slice(0, 10).forEach(evento => {
-                        // Garante capitalização consistente do tipo
                         let tipo = evento.tipo ? (evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1)) : '';
-                        // Mapeia status da câmera para classes visuais (consistentes com relatorio)
                         let status = evento.status_camera || '';
                         let statusClass = 'text-gray-600 font-bold';
                         if (status === 'Ativo') statusClass = 'text-green-600 font-bold';
                         else if (status === 'Inativo') statusClass = 'text-red-600 font-bold';
                         else if (status === 'Em Manutenção') statusClass = 'text-yellow-600 font-bold';
 
-                        // Formata timestamp para exibir até minutos; funciona com 'YYYY-MM-DD HH:MM:SS' ou ISO
                         let ts = evento.timestamp ? evento.timestamp.replace('T', ' ').slice(0,16) : '';
 
                         tbody.innerHTML += `
@@ -118,7 +120,8 @@ include 'cabecalho.php';
                 })
                 .catch(err => {
                     console.error('Erro ao carregar eventos:', err);
-                });         });
+                });
+        });
     </script>    
 </body>
 </html>

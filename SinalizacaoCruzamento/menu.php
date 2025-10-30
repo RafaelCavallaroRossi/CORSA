@@ -119,10 +119,6 @@ include 'cabecalho.php';
                 .catch(err => {
                     console.error('Erro ao carregar eventos:', err);
                 });         });
-        }); });
-
-
-
-</html></body>    </script>    </script>
+    </script>    
 </body>
 </html>

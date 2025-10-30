@@ -16,7 +16,7 @@ $total = $conn->query("SELECT COUNT(*) FROM Eventos_Cameras")->fetchColumn();
 $total_paginas = ceil($total / $por_pagina);
 
 // Busca eventos paginados
-$stmt = $conn->prepare("SELECT id_camera, id_ponto, timestamp, tipo, status_camera FROM Eventos_Cameras ORDER BY timestamp DESC LIMIT ? OFFSET ?");
+$stmt = $conn->prepare("SELECT id_camera, id_ponto, timestamp, tipo, status_camera, observacao FROM Eventos_Cameras ORDER BY timestamp DESC LIMIT ? OFFSET ?");
 $stmt->bindValue(1, $por_pagina, PDO::PARAM_INT);
 $stmt->bindValue(2, $offset, PDO::PARAM_INT);
 $stmt->execute();
@@ -48,6 +48,7 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                 <th class="px-4 py-2 text-left text-gray-700">Timestamp</th>
                                 <th class="px-4 py-2 text-left text-gray-700">Tipo Identificado</th>
                                 <th class="px-4 py-2 text-left text-gray-700">Status da Câmera</th>
+                                <th class="px-4 py-2 text-left text-gray-700">Observação</th>
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
@@ -59,11 +60,12 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                                         <td class="px-4 py-2"><?= htmlspecialchars($evento['timestamp']) ?></td>
                                         <td class="px-4 py-2"><?= htmlspecialchars($evento['tipo']) ?></td>
                                         <td class="px-4 py-2"><?= htmlspecialchars($evento['status_camera']) ?></td>
+                                        <td class="px-4 py-2"><?= htmlspecialchars($evento['observacao']) ?></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="5" class="px-4 py-2 text-center text-gray-500">Nenhum evento registrado.</td>
+                                    <td colspan="6" class="px-4 py-2 text-center text-gray-500">Nenhum evento registrado.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>

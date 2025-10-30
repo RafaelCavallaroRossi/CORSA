@@ -7,26 +7,6 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 
-// Tratamento de inserção de novo evento (form POST)
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $allowed_types = ['Carro', 'Caminhão', 'Moto', 'Inoperante'];
-    $allowed_status = ['Ativo', 'Inativo', 'Em Manutenção'];
-
-    $id_camera = isset($_POST['id_camera']) ? intval($_POST['id_camera']) : null;
-    $id_ponto = isset($_POST['id_ponto']) ? trim($_POST['id_ponto']) : null;
-    $timestamp = !empty($_POST['timestamp']) ? $_POST['timestamp'] : date('Y-m-d H:i:s');
-    $tipo = isset($_POST['tipo']) ? trim($_POST['tipo']) : null;
-    $status_camera = isset($_POST['status_camera']) ? trim($_POST['status_camera']) : null;
-    $observacao = isset($_POST['observacao']) ? trim($_POST['observacao']) : null;
-
-    if ($id_camera && $id_ponto && in_array($tipo, $allowed_types, true) && in_array($status_camera, $allowed_status, true)) {
-        $ins = $conn->prepare("INSERT INTO Eventos_Cameras (id_camera, id_ponto, timestamp, tipo, status_camera, observacao) VALUES (?, ?, ?, ?, ?, ?)");
-        $ins->execute([$id_camera, $id_ponto, $timestamp, $tipo, $status_camera, $observacao]);
-    }
-    header("Location: relatorioEventos.php");
-    exit;
-}
-
 $por_pagina = 20;
 $pagina = isset($_GET['pagina']) ? max(1, intval($_GET['pagina'])) : 1;
 $offset = ($pagina - 1) * $por_pagina;
@@ -58,30 +38,6 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <main class="flex-1 p-6 flex items-start justify-center">
             <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-5xl">
                 <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Relatório de Eventos das Câmeras</h1>
-
-                <!-- Formulário curto para registrar evento -->
-                <form method="post" class="mb-6 grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <input type="number" name="id_camera" placeholder="ID da Câmera" required class="px-3 py-2 border rounded" />
-                    <input type="text" name="id_ponto" placeholder="ID do Ponto" required class="px-3 py-2 border rounded" />
-                    <input type="datetime-local" name="timestamp" class="px-3 py-2 border rounded" />
-                    <select name="tipo" required class="px-3 py-2 border rounded">
-                        <option value="">Tipo</option>
-                        <option>Carro</option>
-                        <option>Caminhão</option>
-                        <option>Moto</option>
-                        <option>Inoperante</option>
-                    </select>
-                    <select name="status_camera" required class="px-3 py-2 border rounded">
-                        <option value="">Status da Câmera</option>
-                        <option>Ativo</option>
-                        <option>Inativo</option>
-                        <option>Em Manutenção</option>
-                    </select>
-                    <input type="text" name="observacao" placeholder="Observação (opcional)" class="px-3 py-2 border rounded" />
-                    <div class="md:col-span-3 text-right">
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Registrar Evento</button>
-                    </div>
-                </form>
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -128,11 +84,6 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
                 </div>
             </div>
-        </main>
-    </div>
-</body>
-</html>
-</html></body>    </div>        </main>            </div>            </div>
         </main>
     </div>
 </body>

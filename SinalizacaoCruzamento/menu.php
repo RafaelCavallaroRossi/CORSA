@@ -5,6 +5,54 @@ if (!isset($_SESSION['usuario_id'])) {
     exit;
 }
 include 'config.php';
+
+// Obtém data visualizada (GET ?data=YYYY-MM-DD) ou usa hoje
+$view_date = new DateTime('now');
+if (!empty($_GET['data'])) {
+    $d = DateTime::createFromFormat('Y-m-d', $_GET['data']);
+    if ($d && $d->format('Y-m-d') === $_GET['data']) {
+        $view_date = $d;
+    }
+}
+$date_sql = $view_date->format('Y-m-d');
+$display_date = $view_date->format('d/m/Y');
+
+// Calcula dispositivos ativos a partir da tabela Dispositivos (apenas registros com status = 'Ativo')
+// e eventos na data selecionada
+$dispositivos_ativos = 0;
+$eventos_no_dia = 0;
+try {
+    $conn = Database::getInstance()->getConnection();
+
+    // Contar dispositivos registrados como 'Ativo' na tabela Dispositivos
+    try {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Dispositivos WHERE status = ?");
+        $stmt->execute(['Ativo']);
+        $dispositivos_ativos = (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        // Fallback: se tabela Dispositivos não existir, tenta contar devices ativos via Eventos_Cameras (menos confiável)
+        try {
+            $stmt = $conn->prepare("SELECT COUNT(DISTINCT id_camera) FROM Eventos_Cameras WHERE status_camera = ?");
+            $stmt->execute(['Ativo']);
+            $dispositivos_ativos = (int)$stmt->fetchColumn();
+        } catch (PDOException $e2) {
+            $dispositivos_ativos = 0;
+        }
+    }
+
+    // Eventos no dia visualizado (usa DATE(timestamp) = ?)
+    try {
+        $stmt = $conn->prepare("SELECT COUNT(*) FROM Eventos_Cameras WHERE DATE(timestamp) = ?");
+        $stmt->execute([$date_sql]);
+        $eventos_no_dia = (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        $eventos_no_dia = 0;
+    }
+} catch (Exception $e) {
+    $dispositivos_ativos = 0;
+    $eventos_no_dia = 0;
+}
+
 include 'cabecalho.php';
 ?>
 <!DOCTYPE html>
@@ -26,31 +74,14 @@ include 'cabecalho.php';
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <div class="bg-white p-4 rounded shadow flex items-center">
                     <i class="fa fa-desktop text-blue-500 text-2xl mr-3"></i>
-                    <span>Dispositivos Ativos: <span class="font-bold">5</span></span>
+                    <span>Dispositivos Ativos: <span class="font-bold"><?= htmlspecialchars($dispositivos_ativos, ENT_QUOTES, 'UTF-8') ?></span></span>
                 </div>
                 <div class="bg-white p-4 rounded shadow flex items-center">
                     <i class="fa fa-calendar-day text-green-500 text-2xl mr-3"></i>
-                    <span>Eventos Hoje: <span class="font-bold">12</span></span>
+                    <span>Eventos em <?= htmlspecialchars($display_date, ENT_QUOTES, 'UTF-8') ?>: <span class="font-bold"><?= htmlspecialchars($eventos_no_dia, ENT_QUOTES, 'UTF-8') ?></span></span>
                 </div>
             </div>
 
-            <div class="bg-white rounded shadow overflow-x-auto">
-                <table class="min-w-full text-left">
-                    <thead class="bg-gray-200">
-                        <tr>
-                            <th class="p-2">Timestamp</th>
-                            <th class="p-2">ID da Câmera</th>
-                            <th class="p-2">ID do Ponto</th>
-                            <th class="p-2">Tipo</th>
-                            <th class="p-2">Status da Câmera</th>
-                            <th class="p-2">Observação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="eventos-tbody">
-                        <!-- Eventos serão inseridos aqui via JavaScript -->
-                    </tbody>
-                </table>
-            </div>
         </main>
     </div>
     <script>
@@ -87,8 +118,11 @@ include 'cabecalho.php';
                 })
                 .catch(err => {
                     console.error('Erro ao carregar eventos:', err);
-                });
-        });
-    </script>
+                });         });
+        }); });
+
+
+
+</html></body>    </script>    </script>
 </body>
 </html>

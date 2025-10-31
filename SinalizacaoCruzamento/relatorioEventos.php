@@ -24,7 +24,6 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <title>Relatório de Eventos das Câmeras</title>
@@ -32,7 +31,6 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
 </head>
-
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
     <div class="h-screen flex" style="padding-top: 88px;">
@@ -89,5 +87,4 @@ $eventos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         </main>
     </div>
 </body>
-
 </html>

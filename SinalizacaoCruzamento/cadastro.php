@@ -79,7 +79,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <title>Cadastro de Dispositivo - CORSA</title>
@@ -88,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
 </head>
-
 <body class="bg-gray-100 font-sans">
     <?php include 'cabecalho.php'; ?>
     <div class="h-screen flex" style="padding-top: 88px;">
@@ -109,9 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     </div>
                     <?php if ($mensagem_tipo === 'sucesso'): ?>
                         <script>
-                            setTimeout(() => {
-                                window.location.href = "menu.php";
-                            }, 2000);
+                            setTimeout(() => { window.location.href = "menu.php"; }, 2000);
                         </script>
                     <?php endif; ?>
                 <?php endif; ?>
@@ -157,5 +153,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </main>
     </div>
 </body>
-
 </html>

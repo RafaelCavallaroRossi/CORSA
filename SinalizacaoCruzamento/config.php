@@ -6,13 +6,11 @@ require __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-class Database
-{
+class Database {
     private static $instance = null;
     private $conn;
 
-    private function __construct()
-    {
+    private function __construct() {
         /*
         Exemplo de arquivo .env:
         DB_HOST=localhost
@@ -36,21 +34,18 @@ class Database
         }
     }
 
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new Database();
         }
         return self::$instance;
     }
 
-    public function getConnection()
-    {
+    public function getConnection() {
         return $this->conn;
     }
 
-    public function disconnect()
-    {
+    public function disconnect() {
         $this->conn = null;
         self::$instance = null;
     }

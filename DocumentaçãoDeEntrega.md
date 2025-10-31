@@ -1,6 +1,6 @@
 # Documentação de Entrega
 
-**Câmeras Operacionais de Registro e Segurança Automobilística — CORSA**
+**Câmeras Operacionais de Reconhecimento e Segurança Automobilística — CORSA**
 
 ---
 
@@ -145,4 +145,5 @@ Edge → (evento) → Backend (validação/IA) → Decisão → Acionamento (Edg
 ---
 
 **Em desenvolvimento por:** Grupo Block‑Brain
+
 

@@ -1,0 +1,5 @@
+# Ignorar arquivos de variáveis de ambiente
+.env
+
+# Ignorar a pasta do composer
+vendor/

@@ -6,13 +6,54 @@ require __DIR__ . '/vendor/autoload.php';
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-$host = 'localhost';
-$db = 'CameraCruzamento';
-$user = 'root';
-$pass = '';
-try {
-    $conn = new PDO("mysql:host=$host;dbname=$db", $user, $pass);
-    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    echo "Connection failed: " . $e->getMessage();
+class Database
+{
+    private static $instance = null;
+    private $conn;
+
+    private function __construct()
+    {
+        /*
+        Exemplo de arquivo .env:
+        DB_HOST=localhost
+        DB_NAME=CameraCruzamento
+        DB_USER=root
+        DB_PASS=
+        */
+        $host = $_ENV['DB_HOST'];
+        $db   = $_ENV['DB_NAME'];
+        $user = $_ENV['DB_USER'];
+        $pass = $_ENV['DB_PASS'];
+        $dsn = "mysql:host=$host;dbname=$db;charset=utf8mb4";
+        try {
+            $this->conn = new PDO($dsn, $user, $pass, [
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"
+            ]);
+            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $e) {
+            echo "Connection failed: " . $e->getMessage();
+            exit;
+        }
+    }
+
+    public static function getInstance()
+    {
+        if (self::$instance === null) {
+            self::$instance = new Database();
+        }
+        return self::$instance;
+    }
+
+    public function getConnection()
+    {
+        return $this->conn;
+    }
+
+    public function disconnect()
+    {
+        $this->conn = null;
+        self::$instance = null;
+    }
 }
+/* Uso:
+    $db = Database::getInstance()->getConnection();*/

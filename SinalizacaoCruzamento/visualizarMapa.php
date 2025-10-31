@@ -1,5 +1,6 @@
 <?php
 include 'config.php';
+$conn = Database::getInstance()->getConnection();
 session_start();
 if (!isset($_SESSION['usuario_id'])) {
     header("Location: index.php");
@@ -14,6 +15,7 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Mapa de Dispositivos</title>
@@ -28,16 +30,20 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
         }
     </style>
 </head>
+
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
-    <div class="w-full min-h-screen gradient-bg flex flex-col items-center p-8" style="padding-top: 88px;">
-        <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-6xl">
-            <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Mapa de Dispositivos</h1>
-            <div id="map"></div>
-            <div class="mt-6 text-center">
-                <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+    <div class="h-screen flex" style="padding-top: 88px;">
+        <?php include 'sidebar.php'; ?>
+        <main class="flex-1 p-6 flex items-center justify-center">
+            <div class="bg-white rounded-xl shadow-xl p-6 w-full max-w-6xl">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Mapa de Dispositivos</h1>
+                <div id="map"></div>
+                <div class="mt-6 text-center">
+                    <a href="menu.php" class="inline-block bg-gray-300 text-gray-800 px-4 py-2 rounded hover:bg-gray-400">Voltar ao Menu</a>
+                </div>
             </div>
-        </div>
+        </main>
     </div>
     <script>
         // Dados dos dispositivos vindos do PHP
@@ -47,18 +53,30 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 
         // Função para obter coordenadas a partir do campo localizacao
         async function getLatLng(localizacao) {
-            // Se já for coordenada, retorna direto
-            if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(localizacao)) {
-                const [lat, lng] = localizacao.split(',').map(Number);
-                return {lat, lng};
+            try {
+                // Se já for coordenada, retorna direto
+                if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(localizacao)) {
+                    const [lat, lng] = localizacao.split(',').map(Number);
+                    return {
+                        lat,
+                        lng
+                    };
+                }
+                // Se for endereço, usa geocoding
+                const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(localizacao)}&key=${apiKey}`);
+                const data = await response.json();
+                if (data.status === "OK") {
+                    return data.results[0].geometry.location;
+                } else if (data.status === "OVER_QUERY_LIMIT") {
+                    throw new Error("Limite de uso da API do Google Maps excedido.");
+                }
+            } catch (e) {
+                const aviso = document.createElement('div');
+                aviso.className = "bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded my-2";
+                aviso.innerText = e.message || "Erro ao consultar localização.";
+                document.querySelector('.bg-white.rounded-xl.shadow-xl').appendChild(aviso);
             }
-            // Se for endereço, usa geocoding
-            const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(localizacao)}&key=${apiKey}`);
-            const data = await response.json();
-            if (data.status === "OK") {
-                return data.results[0].geometry.location;
-            }
-            return null;
+            return null; // Falha no geocoding
         }
 
         // Ícones personalizados por status
@@ -70,16 +88,25 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 
         async function initMap() {
             // Posição inicial (Brasil)
-            const center = { lat: -14.2350, lng: -51.9253 };
+            const center = {
+                lat: -14.2350,
+                lng: -51.9253
+            };
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 4,
                 center: center,
             });
 
-            // Adiciona marcadores
             for (const disp of dispositivos) {
                 const latlng = await getLatLng(disp.localizacao);
-                if (!latlng) continue;
+                if (!latlng) {
+                    // Mostra aviso no mapa para localização inválida
+                    const aviso = document.createElement('div');
+                    aviso.className = "bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded my-2";
+                    aviso.innerText = `Não foi possível localizar "${disp.nome}" (ID do Ponto: ${disp.id_ponto}) no mapa. Verifique o endereço ou coordenada.`;
+                    document.querySelector('.bg-white.rounded-xl.shadow-xl').appendChild(aviso);
+                    continue;
+                }
                 const marker = new google.maps.Marker({
                     position: latlng,
                     map: map,
@@ -88,20 +115,39 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
                 });
                 const info = `
                     <div>
-                        <strong>${disp.nome}</strong><br>
-                        ID do Ponto: ${disp.id_ponto}<br>
-                        Status: <span style="color:${disp.status === 'Ativo' ? 'green' : (disp.status === 'Inativo' ? 'red' : 'orange')}">${disp.status}</span><br>
-                        Localização: ${disp.localizacao}<br>
-                        ${disp.observacao ? 'Obs: ' + disp.observacao : ''}
+                        <strong>${escapeHtml(disp.nome)}</strong><br>
+                        ID do Ponto: ${escapeHtml(disp.id_ponto)}<br>
+                        Status: <span style="color:${disp.status === 'Ativo' ? 'green' : (disp.status === 'Inativo' ? 'red' : 'orange')}">${escapeHtml(disp.status)}</span><br>
+                        Localização: ${escapeHtml(disp.localizacao)}<br>
+                        ${disp.observacao ? 'Obs: ' + escapeHtml(disp.observacao) : ''}
                     </div>
                 `;
-                const infowindow = new google.maps.InfoWindow({ content: info });
+                const infowindow = new google.maps.InfoWindow({
+                    content: info
+                });
                 marker.addListener("click", () => {
                     infowindow.open(map, marker);
                 });
             }
         }
+
+        function escapeHtml(text) {
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        window.gm_authFailure = function() {
+            const aviso = document.createElement('div');
+            aviso.className = "bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded my-2";
+            aviso.innerText = "Erro de autenticação com a API do Google Maps. Verifique sua chave ou limite de uso.";
+            document.querySelector('.bg-white.rounded-xl.shadow-xl').appendChild(aviso);
+        };
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo urlencode($googleMapsApiKey); ?>&callback=initMap"></script>
 </body>
+
 </html>

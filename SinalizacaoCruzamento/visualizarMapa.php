@@ -15,6 +15,7 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>Mapa de Dispositivos</title>
@@ -29,6 +30,7 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
         }
     </style>
 </head>
+
 <body class="bg-gray-50 font-sans">
     <?php include 'cabecalho.php'; ?>
     <div class="h-screen flex" style="padding-top: 88px;">
@@ -55,7 +57,10 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
                 // Se já for coordenada, retorna direto
                 if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(localizacao)) {
                     const [lat, lng] = localizacao.split(',').map(Number);
-                    return {lat, lng};
+                    return {
+                        lat,
+                        lng
+                    };
                 }
                 // Se for endereço, usa geocoding
                 const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(localizacao)}&key=${apiKey}`);
@@ -83,7 +88,10 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
 
         async function initMap() {
             // Posição inicial (Brasil)
-            const center = { lat: -14.2350, lng: -51.9253 };
+            const center = {
+                lat: -14.2350,
+                lng: -51.9253
+            };
             const map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 4,
                 center: center,
@@ -114,7 +122,9 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
                         ${disp.observacao ? 'Obs: ' + escapeHtml(disp.observacao) : ''}
                     </div>
                 `;
-                const infowindow = new google.maps.InfoWindow({ content: info });
+                const infowindow = new google.maps.InfoWindow({
+                    content: info
+                });
                 marker.addListener("click", () => {
                     infowindow.open(map, marker);
                 });
@@ -139,4 +149,5 @@ $googleMapsApiKey = $_ENV['GOOGLE_MAPS_API_KEY'];
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<?php echo urlencode($googleMapsApiKey); ?>&callback=initMap"></script>
 </body>
+
 </html>

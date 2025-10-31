@@ -57,6 +57,7 @@ include 'cabecalho.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <title>CORSA - Dashboard</title>
@@ -65,6 +66,7 @@ include 'cabecalho.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="estilo.css">
 </head>
+
 <body class="bg-gray-100 font-sans">
     <div class="h-screen flex" style="padding-top: 88px;">
         <?php include 'sidebar.php'; ?>
@@ -104,7 +106,7 @@ include 'cabecalho.php';
                         else if (status === 'Inativo') statusClass = 'text-red-600 font-bold';
                         else if (status === 'Em Manutenção') statusClass = 'text-yellow-600 font-bold';
 
-                        let ts = evento.timestamp ? evento.timestamp.replace('T', ' ').slice(0,16) : '';
+                        let ts = evento.timestamp ? evento.timestamp.replace('T', ' ').slice(0, 16) : '';
 
                         tbody.innerHTML += `
                             <tr class="border-b">
@@ -122,6 +124,7 @@ include 'cabecalho.php';
                     console.error('Erro ao carregar eventos:', err);
                 });
         });
-    </script>    
+    </script>
 </body>
+
 </html>

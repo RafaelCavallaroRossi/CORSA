@@ -100,61 +100,62 @@ include 'cabecalho.php';
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Encontra o <tbody> da nova tabela
         const tbody = document.getElementById('eventos-tbody');
         
-        // Se a tabela não existir nesta página, não faz nada
         if (!tbody) {
-            console.warn('Elemento #eventos-tbody não encontrado. A tabela de eventos recentes não será carregada.');
+            console.warn('Elemento #eventos-tbody não encontrado.');
             return;
         }
 
         function buscarEventos() {
-            // Busca os dados do novo arquivo getEventos.php
             fetch('getEventos.php') 
                 .then(response => {
                     if (!response.ok) throw new Error('Resposta não OK: ' + response.status);
                     return response.json();
                 })
                 .then(eventos => {
-                    tbody.innerHTML = ''; // Limpa a tabela
+                    tbody.innerHTML = ''; 
                     
                     if (eventos.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4" class="p-2 text-center text-gray-500">Nenhum evento recente.</td></tr>';
                         return;
                     }
 
-                    // O getEventos.php já retorna os 10 mais recentes
-                    eventos.forEach(evento => {
+                    eventos.slice(0, 8).forEach(evento => {
                         let tipo = evento.tipo ? (evento.tipo.charAt(0).toUpperCase() + evento.tipo.slice(1)) : 'N/A';
                         
-                        // LÓGICA CORRIGIDA:
-                        // Usamos 'observacao' para o status (Detectado, Estacionado, Livre)
                         let status = evento.observacao || 'Indefinido'; 
-                        let statusClass = 'text-gray-600 font-bold'; // Cor padrão
+                        let statusClass = 'text-gray-600 font-bold';
                         
-                        // ### MUDANÇA DE LÓGICA DE COR (FINAL) ###
-                        
-                        // "Detectado" é o alerta de carro em movimento
                         if (status === 'Detectado') {
-                            statusClass = 'text-yellow-600 font-bold'; // Alerta (Amarelo)
-                        
-                        // "Estacionado" é neutro (desconsiderado)
+                            statusClass = 'text-yellow-600 font-bold';
                         } else if (status === 'Estacionado') { 
-                            statusClass = 'text-gray-500 font-bold'; // Neutro (Cinza)
-                        
-                        // Caso o script anterior tenha enviado "Parado"
+                            statusClass = 'text-gray-500 font-bold';
                         } else if (status === 'Parado') { 
                             statusClass = 'text-red-600 font-bold'; 
-                        
-                        // Outros status
                         } else if (status === 'Inativo' || status === 'Desligado') { 
                             statusClass = 'text-red-600 font-bold';
                         }
                         
-                        let ts = evento.timestamp ? evento.timestamp.replace('T', ' ').slice(0, 16) : 'N/A';
+                        // ### MUDANÇA EXATAMENTE AQUI ###
+                        // Trocamos a linha antiga de 'ts' por esta lógica de formatação
+                        
+                        let ts = 'N/A'; // Valor padrão
+                        if (evento.timestamp) {
+                            const dataObj = new Date(evento.timestamp); // 1. Cria um objeto Data
+                            
+                            // 2. Pega as partes da data
+                            const dia = dataObj.getDate().toString().padStart(2, '0');
+                            const mes = (dataObj.getMonth() + 1).toString().padStart(2, '0'); // +1 porque getMonth() começa do 0
+                            const ano = dataObj.getFullYear().toString().slice(-2); // Pega os últimos 2 dígitos para "AA"
+                            const hora = dataObj.getHours().toString().padStart(2, '0');
+                            const minuto = dataObj.getMinutes().toString().padStart(2, '0');
+                            
+                            // 3. Monta a string no formato DD-MM-AA HH:mm
+                            ts = `${dia}-${mes}-${ano} ${hora}:${minuto}`;
+                        }
+                        // ### FIM DA MUDANÇA ###
 
-                        // Adiciona a nova linha na tabela
                         tbody.innerHTML += `
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="p-2">${ts}</td>
@@ -171,8 +172,8 @@ include 'cabecalho.php';
                 });
         }
         
-        buscarEventos(); // Busca os eventos assim que a página carrega
-        setInterval(buscarEventos, 5000); // Atualiza a tabela a cada 5 segundos
+        buscarEventos();
+        setInterval(buscarEventos, 5000); 
     });
     </script>
 </body>

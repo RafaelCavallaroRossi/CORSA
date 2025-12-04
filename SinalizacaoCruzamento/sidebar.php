@@ -22,6 +22,11 @@ $current = basename($_SERVER['PHP_SELF']);
             </a>
         </li>
         <li>
+            <a href="visualizarcamera.php" class="block p-2 hover:bg-gray-200 rounded <?php if($current == 'visualizarcamera.php') echo 'font-semibold text-blue-700'; ?>">
+                <i class="fa-solid fa-video mr-2"></i>Visualizar Câmeras
+            </a>
+        </li>
+        <li>
             <a href="relatorioEventos.php" class="block p-2 hover:bg-gray-200 rounded <?php if($current == 'relatorioEventos.php') echo 'font-semibold text-blue-700'; ?>">
                 <i class="fa fa-file-alt mr-2"></i>Relatório de Eventos
             </a>

@@ -175,4 +175,4 @@ Para dúvidas, contribuições ou solicitações de implantação, entre em cont
 * [ ] Integração com sistemas de gestão de trânsito municipal;
 * [ ] Estudos de viabilidade econômica e expansão.
 
-> Atualizado 03/11/2025
+> Atualizado 04/12/2025

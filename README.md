@@ -8,7 +8,7 @@
 
 ## 📌 Descrição Geral
 
-O **CORSA** (Câmeras Operacionais de Registro e Segurança Automobilística) é um sistema inovador voltado ao conceito de **cidades inteligentes**. Seu propósito é reduzir acidentes em cruzamentos de baixa visibilidade por meio de detecção automática, alerta visual e registro de eventos, proporcionando alternativa mais acessível e eficiente ao semáforo tradicional.
+O **CORSA** (Câmeras Operacionais de Reconhecimento e Segurança Automobilística) é um sistema inovador voltado ao conceito de **cidades inteligentes**. Seu propósito é reduzir acidentes em cruzamentos de baixa visibilidade por meio de detecção automática, alerta visual e registro de eventos, proporcionando alternativa mais acessível e eficiente ao semáforo tradicional.
 
 ---
 
@@ -175,4 +175,4 @@ Para dúvidas, contribuições ou solicitações de implantação, entre em cont
 * [ ] Integração com sistemas de gestão de trânsito municipal;
 * [ ] Estudos de viabilidade econômica e expansão.
 
-> Atualizado 13/10/2025
+> Atualizado 03/11/2025

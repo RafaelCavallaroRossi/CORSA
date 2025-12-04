@@ -5,21 +5,13 @@ require __DIR__ . '/vendor/autoload.php';
 // Carrega as variáveis de ambiente do arquivo .env
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
+date_default_timezone_set('America/Sao_Paulo');
 
-class Database
-{
+class Database {
     private static $instance = null;
     private $conn;
 
-    private function __construct()
-    {
-        /*
-        Exemplo de arquivo .env:
-        DB_HOST=localhost
-        DB_NAME=CameraCruzamento
-        DB_USER=root
-        DB_PASS=
-        */
+    private function __construct() {
         $host = $_ENV['DB_HOST'];
         $db   = $_ENV['DB_NAME'];
         $user = $_ENV['DB_USER'];
@@ -36,21 +28,18 @@ class Database
         }
     }
 
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (self::$instance === null) {
             self::$instance = new Database();
         }
         return self::$instance;
     }
 
-    public function getConnection()
-    {
+    public function getConnection() {
         return $this->conn;
     }
 
-    public function disconnect()
-    {
+    public function disconnect() {
         $this->conn = null;
         self::$instance = null;
     }

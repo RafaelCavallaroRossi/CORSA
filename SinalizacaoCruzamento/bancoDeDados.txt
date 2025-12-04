@@ -31,7 +31,7 @@ CREATE TABLE Dispositivos (
     nome VARCHAR(100) NOT NULL,
     id_ponto VARCHAR(50) NOT NULL,
     localizacao VARCHAR(255) NOT NULL, -- endereço ou coordenadas
-    status ENUM('Ativo', 'Inativo', 'Em Manutenção') NOT NULL DEFAULT 'Ativo',
+    status ENUM('Ativo', 'Inativo', 'Manutenção') NOT NULL DEFAULT 'Ativo',
     observacao VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -44,8 +44,8 @@ CREATE TABLE Eventos_Cameras (
     id_camera INT NOT NULL,
     id_ponto VARCHAR(50) NOT NULL,
     timestamp DATETIME NOT NULL,
-    tipo ENUM('Carro','Caminhão','Moto','Inoperante') NOT NULL,
-    status_camera ENUM('Ativo','Inativo','Em Manutenção') NOT NULL,
+    tipo ENUM('carro', 'caminhao', 'moto', 'onibus', 'pedestre') NOT NULL,
+    status_camera ENUM('Ativo', 'Inativo', 'Manutenção') NOT NULL,
     observacao VARCHAR(255),
     FOREIGN KEY (id_camera) REFERENCES Dispositivos(id)
         ON DELETE CASCADE
@@ -61,12 +61,12 @@ INSERT INTO Usuarios (nome, email, senha) VALUES
 -- Exemplo de inserção de dispositivos
 INSERT INTO Dispositivos (nome, id_ponto, localizacao, status, observacao) VALUES
 ('Câmera Cruzamento 1', 'P1', '-23.55052,-46.633308', 'Ativo', 'Cruzamento Av. Paulista x Rua Augusta'),
-('Câmera Cruzamento 2', 'P2', '-23.551234,-46.634567', 'Em Manutenção', 'Cruzamento Av. Brasil x Rua Bela Vista');
+('Câmera Cruzamento 2', 'P2', '-23.551234,-46.634567', 'Manutenção', 'Cruzamento Av. Brasil x Rua Bela Vista');
 
 -- Exemplo de inserção de eventos
 INSERT INTO Eventos_Cameras (id_camera, id_ponto, timestamp, tipo, status_camera, observacao) VALUES
-(1, 'P1', '2025-10-01 14:23:00', 'Carro', 'Ativo', 'Trânsito normal'),
-(2, 'P2', '2025-10-01 14:25:00', 'Inoperante', 'Em Manutenção', 'Visão comprometida por chuva');
+(1, 'P1', '2025-10-01 14:23:00', 'carro', 'em funcionamento', 'Trânsito normal'),
+(2, 'P2', '2025-10-01 14:25:00', 'pedestre', 'pouco alterado', 'Movimento incomum detectado');
 
 -- Índices para melhorar performance em buscas
 CREATE INDEX idx_eventos_id_ponto ON Eventos_Cameras(id_ponto);

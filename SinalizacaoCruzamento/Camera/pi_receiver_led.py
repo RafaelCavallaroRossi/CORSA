@@ -1,57 +1,48 @@
-# pi_receiver_led.py
-from flask import Flask, request, jsonify
+import socket
 import RPi.GPIO as GPIO
-import threading
-import time
 
-# ---------- CONFIG ----------
-LED_PIN = 18   # GPIO BCM pin onde o LED está conectado
-HOST = "0.0.0.0"
-PORT = 5000
+UDP_PORT = 5005
 
-# ---------- SETUP GPIO ----------
+LED_PIN = 18 
+ID_PONTO_ESPERADO = "P1" 
+
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 GPIO.setup(LED_PIN, GPIO.OUT)
 GPIO.output(LED_PIN, GPIO.LOW)
 
-app = Flask(__name__)
 
-# Estado atual (thread-safe)
-state = {"vehicle_present": False, "moving_count": 0}
-lock = threading.Lock()
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("", UDP_PORT))
 
-@app.route("/update", methods=["POST"])
-def update():
-    data = request.get_json(silent=True)
-    if not data:
-        return jsonify({"error": "invalid json"}), 400
+print(f"Raspberry Pi aguardando dados na porta {UDP_PORT}...")
+print(f"Controlando LED no pino {LED_PIN} para o ponto {ID_PONTO_ESPERADO}")
 
-    vehicle_present = bool(data.get("vehicle_present", False))
-    moving_count = int(data.get("moving_count", 0))
+try:
+    while True:
+        data, addr = sock.recvfrom(1024)
+        mensagem = data.decode('utf-8').strip()
+        
 
-    with lock:
-        state["vehicle_present"] = vehicle_present
-        state["moving_count"] = moving_count
-        # controla o LED imediatamente
-        GPIO.output(LED_PIN, GPIO.HIGH if vehicle_present else GPIO.LOW)
+        if ":" in mensagem:
+            ponto_recebido, estado = mensagem.split(":")
+            
+ 
+            if ponto_recebido == ID_PONTO_ESPERADO:
+                if estado == "1":
+                    GPIO.output(LED_PIN, GPIO.HIGH)
+                    print(f"🚗 {ponto_recebido}: DETECTADO -> LED ACESO")
+                else:
+                    GPIO.output(LED_PIN, GPIO.LOW)
+                    print(f"✅ {ponto_recebido}: LIVRE -> LED APAGADO")
+        else:
 
-    return jsonify({"status":"ok"}), 200
+            if mensagem == "1":
+                 GPIO.output(LED_PIN, GPIO.HIGH)
+            elif mensagem == "0":
+                 GPIO.output(LED_PIN, GPIO.LOW)
 
-@app.route("/status", methods=["GET"])
-def status():
-    with lock:
-        return jsonify(state)
-
-def run_flask():
-    # flask built-in server (suficiente para LAN + baixo throughput)
-    app.run(host=HOST, port=PORT, threaded=True)
-
-if __name__ == "__main__":
-    try:
-        print("Iniciando receptor no Raspberry Pi...")
-        run_flask()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        GPIO.output(LED_PIN, GPIO.LOW)
-        GPIO.cleanup()
+except KeyboardInterrupt:
+    print("Encerrando...")
+    GPIO.cleanup()
+    sock.close()
